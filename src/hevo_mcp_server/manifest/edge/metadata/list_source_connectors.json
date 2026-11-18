@@ -1,0 +1,119 @@
+{
+  "name": "list_source_connectors",
+  "product": "edge",
+  "resource": "metadata",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/metadata/sources/connectors",
+  "summary": "List All Source Connectors",
+  "description": "Retrieves the Source connectors available to your team, including their identifier, type, name, description, and documentation link. The connectors are ordered by `connector_id`, and then by `type`. The ordering is case-sensitive, so a `connector_id` in uppercase is listed before one in lowercase.\n\nUse the `connector_id` value returned in this response to call the [Get Configuration Details of a Source Connector](/reference/get_api-v2-metadata-sources-connectors-connector-id) endpoint and retrieve the configuration settings that the connector accepts. Connectors that your team does not have access to are not listed. A connector in beta is listed only if it has been enabled for your team.\n\nRead [Find your Source Connector](/reference/creating-a-pipeline-with-hevo-api#step-1-find-your-source-connector) for more information about how to find the connector for your Source.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-metadata-sources-connectors",
+  "parameters": [
+    {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "Value used to retrieve the next set of results. Provide the `next_cursor` value returned in the previous API response.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Maximum number of results the API should return. If not set, the API returns up to 100 items.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 500,
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "description": "(Optional) Filters the response to return only the connectors of the specified Source type. This parameter accepts a single value, and the value is not case-sensitive. A value that does not match any Source type returns an empty `data` array.",
+      "in": "query",
+      "name": "type",
+      "required": false,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "type": "string"
+      },
+      "data": {
+        "description": "List of Source connectors available to your team.",
+        "items": {
+          "properties": {
+            "connector_id": {
+              "description": "Identifier of the connector. A connector that ingests data from several Source types is listed once for each type. Send this value as `source.connector_id` while creating a Pipeline. For example, _SOURCE_CONNECTOR_MYSQL_.",
+              "type": "string"
+            },
+            "type": {
+              "description": "Source type that the connector ingests data from. Send this value as `source.type` while creating a Pipeline. For example, _AURORA_.",
+              "type": "string"
+            },
+            "display_name": {
+              "description": "Display name of the Source. For example, _Amazon Aurora MySQL_.",
+              "type": "string"
+            },
+            "description": {
+              "description": "Short explanation of what the connector ingests, and the Source it ingests from.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "documentation_url": {
+              "description": "Link to the documentation for this Source.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "in_beta": {
+              "description": "Indicates whether the connector is in beta. A connector in beta is listed only if it has been enabled for your team.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "connector_id",
+            "type",
+            "display_name"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "next_cursor": {
+        "description": "Value you can use to fetch the next set of results. Specify this value in the `cursor` query parameter to fetch additional results. This is `null` when no more results are available.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "has_more": {
+        "description": "Indicates whether more results are available.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "data",
+      "has_more"
+    ],
+    "type": "object"
+  }
+}

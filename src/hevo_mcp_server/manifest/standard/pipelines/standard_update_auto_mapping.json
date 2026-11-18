@@ -1,0 +1,44 @@
+{
+  "name": "standard_update_auto_mapping",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/auto-mapping",
+  "summary": "Update Pipeline Auto-Mapping status",
+  "description": "",
+  "destructive": false,
+  "consequence": "Turns Auto Mapping on or off for this Pipeline.",
+  "title": "Turn Auto Mapping on or off for Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatemappingstatus",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "ENABLED",
+            "DISABLED"
+          ]
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

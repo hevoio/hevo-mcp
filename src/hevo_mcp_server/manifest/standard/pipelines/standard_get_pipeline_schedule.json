@@ -1,0 +1,89 @@
+{
+  "name": "standard_get_pipeline_schedule",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/pipelines/{id}/schedule",
+  "summary": "Get Pipeline schedule",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getpipelineschedule",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "REAL_TIME",
+            "FREQUENCY",
+            "CRON",
+            "LOAD"
+          ]
+        },
+        "schedule": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "frequency": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "suggested_frequencies": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            },
+            "min_allowed_frequency": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "max_allowed_frequency": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "cron": {
+              "type": "string"
+            },
+            "destination_tables": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "destination_id": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        },
+        "schedule_configurable": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

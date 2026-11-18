@@ -1,0 +1,38 @@
+{
+  "name": "standard_include_pipeline_object",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/pipelines/{id}/objects/{object_name}/include",
+  "summary": "Include Pipeline Object",
+  "description": "",
+  "destructive": false,
+  "consequence": "Hevo starts ingesting the data of this object again.",
+  "title": "Include object in Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/includepipelineobject",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "object_name",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

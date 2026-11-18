@@ -1,0 +1,93 @@
+{
+  "name": "standard_get_schema_mapping",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/pipelines/{id}/mappings/{event_type}",
+  "summary": "Get Schema Mapping of an Event type",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getschemamapping",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "event_type",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "event_type": {
+        "type": "string"
+      },
+      "destination_table": {
+        "type": "string"
+      },
+      "auto_mapping": {
+        "type": "string",
+        "enum": [
+          "ENABLED",
+          "DISABLED"
+        ]
+      },
+      "mapping_status": {
+        "type": "string",
+        "enum": [
+          "MAPPED",
+          "INCOMPLETE",
+          "UNMAPPED",
+          "IGNORED"
+        ]
+      },
+      "field_mappings": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "source_field": {
+              "type": "string"
+            },
+            "source_field_type": {
+              "type": "string"
+            },
+            "destination_field": {
+              "type": "string"
+            },
+            "destination_field_type": {
+              "type": "string"
+            },
+            "ignored": {
+              "type": "boolean"
+            },
+            "incompatible": {
+              "type": "boolean"
+            },
+            "primary_key": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

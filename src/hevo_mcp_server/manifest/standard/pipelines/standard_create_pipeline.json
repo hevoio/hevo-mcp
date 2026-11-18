@@ -1,0 +1,685 @@
+{
+  "name": "standard_create_pipeline",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/pipelines",
+  "summary": "Create Pipeline",
+  "description": "json_parsing_strategy is required: without it Hevo returns a 500 with no message.",
+  "destructive": false,
+  "consequence": "",
+  "title": "Create Standard Pipeline",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/createpipeline",
+  "parameters": [],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "source_name": {
+          "type": "string"
+        },
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "MYSQL",
+            "AWS_RDS_MYSQL",
+            "AURORA",
+            "GCP_MYSQL",
+            "AZURE_MYSQL",
+            "MARIA_DB",
+            "ORACLE",
+            "AWS_RDS_ORACLE",
+            "POSTGRES",
+            "AWS_RDS_POSTGRES",
+            "AWS_AURORA_POSTGRES",
+            "GCP_POSTGRES",
+            "AZURE_POSTGRES",
+            "SF_HEROKU_POSTGRES",
+            "MS_SQL",
+            "AWS_RDS_MSSQL",
+            "GCP_MS_SQL",
+            "AZURE_SQL",
+            "MONGODB",
+            "ATLAS_MONGODB",
+            "DYNAMODB",
+            "SALESFORCE_V2",
+            "NETSUITE_ERP",
+            "FACEBOOK_ADS",
+            "SNAPCHAT_ADS",
+            "AMAZON_ADS",
+            "GOOGLE_SHEETS",
+            "GOOGLE_ADS",
+            "MICROSOFT_ADS",
+            "TWITTER_ADS",
+            "LINKEDIN_ADS",
+            "GOOGLE_SEARCH_CONSOLE",
+            "HUBSPOT",
+            "STRIPE",
+            "ZENDESK",
+            "MAILCHIMP",
+            "MARKETO",
+            "SENDGRID",
+            "SENDGRID_WEBHOOK",
+            "S3",
+            "AZURE_BLOB",
+            "DRIVE",
+            "WEBHOOK",
+            "GCS",
+            "FTP",
+            "RESTAPI",
+            "APPSFLYER",
+            "MIXPANEL",
+            "FRESHDESK",
+            "CLEVERTAP",
+            "REDSHIFT",
+            "SEGMENT",
+            "GITHUB",
+            "INTERCOM_WEBHOOK",
+            "KAFKA",
+            "CONFLUENT_CLOUD",
+            "SHOPIFY",
+            "BIGCOMMERCE",
+            "SHOPIFY_WEBHOOK",
+            "ANDROID_SDK",
+            "ELASTICSEARCH",
+            "AWS_ELASTICSEARCH",
+            "GOOGLE_PLAY_CONSOLE",
+            "INTERCOM",
+            "ADROLL",
+            "AMPLITUDE_ANALYTICS",
+            "JIRA_CLOUD",
+            "OUTBRAIN",
+            "FACEBOOK_PAGES",
+            "PARDOT",
+            "YOUTUBE_ANALYTICS",
+            "CRITEO",
+            "SALESFORCE_MARKETING_CLOUD",
+            "TWILIO",
+            "APPLE_SEARCH_ADS",
+            "INSTAGRAM_BUSINESS",
+            "GOOGLE_ANALYTICS_360",
+            "BIGQUERY",
+            "GOOGLE_ANALYTICS_4",
+            "FIREBASE_ANALYTICS",
+            "TABOOLA",
+            "ASANA",
+            "PENDO",
+            "PIPEDRIVE",
+            "WOOCOMMERCE_VIA_MYSQL",
+            "WORDPRESS_VIA_MYSQL",
+            "MAGENTO_VIA_MYSQL",
+            "PRESTASHOP_VIA_MYSQL",
+            "CHARGEBEE",
+            "QUICKBOOKS",
+            "AFTERSHIP",
+            "DRIP",
+            "INVOICED",
+            "PINTEREST_ADS",
+            "HELPSCOUT",
+            "BRAINTREE_PAYMENTS",
+            "FRONT",
+            "TIKTOK_ADS",
+            "RECURLY",
+            "SWELL",
+            "DELIGHTED",
+            "SHIPSTATION",
+            "AWS_DOCUMENT_DB",
+            "USERVOICE",
+            "ACTIVE_CAMPAIGN",
+            "QUICKBOOKS_TIME",
+            "SURVEY_MONKEY",
+            "HARVEST",
+            "DIXA",
+            "RECHARGE",
+            "TOGGL_TRACK",
+            "PAGER_DUTY",
+            "MISSIVE",
+            "OPSGENIE",
+            "LEMLIST",
+            "OUTREACH",
+            "PINGDOM",
+            "QUICKBASE",
+            "TRELLO",
+            "ONFLEET",
+            "CLICKUP",
+            "WORKABLE",
+            "MAILSHAKE",
+            "TYPEFORM_II",
+            "STREAK",
+            "HIVE",
+            "SLACK",
+            "PANDA_DOC",
+            "QUANTIVE",
+            "APIFY",
+            "HUB_PLANNER",
+            "FRESH_SERVICE",
+            "FRESH_SALES",
+            "GITLAB",
+            "BUILDKITE",
+            "PRODUCTBOARD",
+            "WRIKE",
+            "NETSUITE_ANALYTICS",
+            "SALESLOFT",
+            "KLAVIYO_V2"
+          ]
+        },
+        "source_config": {
+          "type": "object"
+        },
+        "destination_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "auto_mapping": {
+          "type": "string",
+          "enum": [
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "destination_table_prefix": {
+          "type": "string"
+        },
+        "json_parsing_strategy": {
+          "type": "string",
+          "enum": [
+            "FLAT",
+            "SPLIT",
+            "COLLAPSE",
+            "NATIVE",
+            "NATURAL",
+            "COLLAPSE_EXCEPT_ARRAYS"
+          ]
+        },
+        "object_configurations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "namespace": {
+                "type": "object",
+                "properties": {
+                  "group_name": {
+                    "type": "string"
+                  },
+                  "object_name": {
+                    "type": "string"
+                  },
+                  "full_name": {
+                    "type": "string"
+                  },
+                  "hevo_name": {
+                    "type": "string"
+                  },
+                  "poll_type": {
+                    "type": "string",
+                    "enum": [
+                      "FULL_LOAD",
+                      "INCREMENTAL_LOAD"
+                    ]
+                  }
+                }
+              },
+              "task_category_type": {
+                "type": "string",
+                "enum": [
+                  "LOG_TYPE",
+                  "SINGLE_LOG_TYPE",
+                  "HISTORICAL_TABLE_TYPE",
+                  "TABLE_OR_REPORT_TYPE",
+                  "REFRESHER_TYPE",
+                  "GENERIC_SINGLE_LOG_TYPE",
+                  "BATCH_RUN",
+                  "CAPTURE_DELETE",
+                  "SAAS_MULTI_OBJECT_TYPE",
+                  "MULTI_OBJECT_TYPE_HISTORICAL"
+                ]
+              },
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "config": {
+                "oneOf": [
+                  {
+                    "title": "unique_incrementing",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string"
+                      },
+                      "unique_column_name": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "salesforce",
+                    "type": "object",
+                    "properties": {
+                      "use_bulk_api": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "title": "full_load",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "xmin",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "timestamp+incrementing",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string"
+                      },
+                      "incrementing_column_name": {
+                        "type": "string"
+                      },
+                      "timestamp_column_name": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "change_tracking",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string"
+                      },
+                      "historical_enabled": {
+                        "type": "boolean"
+                      },
+                      "unique_column_name": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "title": "incrementing",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string"
+                      },
+                      "incrementing_column_name": {
+                        "type": "string"
+                      },
+                      "stop_on_gap": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "title": "timestamp",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string"
+                      },
+                      "timestamp_column_name": {
+                        "type": "string"
+                      },
+                      "timestamp_delay_interval_ms": {
+                        "type": "integer",
+                        "format": "int32"
+                      }
+                    }
+                  }
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ACTIVE",
+                  "FINISHED",
+                  "PAUSED",
+                  "SKIPPED",
+                  "PERMISSION_DENIED"
+                ]
+              }
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PAUSED",
+            "STREAMING",
+            "SINKING"
+          ]
+        }
+      },
+      "required": [
+        "json_parsing_strategy"
+      ]
+    },
+    "required": true
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "health_status": {
+        "type": "string",
+        "enum": [
+          "OK",
+          "FAILED"
+        ]
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "PAUSED"
+        ]
+      },
+      "source": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "DATABASES_AND_FILES",
+                    "ENGINEERING",
+                    "FINANCE_AND_ACCOUNTING",
+                    "MARKETING_ANALYTICS",
+                    "PRODUCT",
+                    "SALES_AND_SUPPORT",
+                    "DATABASES",
+                    "CRM",
+                    "MARKETING",
+                    "CHAT",
+                    "FINANCE",
+                    "ECOMMERCE",
+                    "FILE_STORAGE",
+                    "ANALYTICS",
+                    "WAREHOUSES",
+                    "STREAMING",
+                    "COLLABORATION",
+                    "WEBHOOKS",
+                    "FREE",
+                    "UNUSED",
+                    "UPCOMING"
+                  ]
+                }
+              },
+              "logo_url": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "documentation_url": {
+                "type": "string"
+              },
+              "pauseable": {
+                "type": "boolean"
+              },
+              "free": {
+                "type": "boolean"
+              },
+              "disabled": {
+                "type": "boolean"
+              }
+            }
+          },
+          "health_status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "FAILED"
+            ]
+          },
+          "failure_reason": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object"
+          }
+        }
+      },
+      "destination": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "logo_url": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "documentation_url": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PAUSED"
+            ]
+          },
+          "health_status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "FAILED"
+            ]
+          },
+          "failure_reason": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "schedule": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "REAL_TIME",
+                  "FREQUENCY",
+                  "CRON",
+                  "LOAD"
+                ]
+              },
+              "schedule": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "suggested_frequencies": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "min_allowed_frequency": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "max_allowed_frequency": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "cron": {
+                    "type": "string"
+                  },
+                  "destination_tables": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "destination_id": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              },
+              "schedule_configurable": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "last_run_ts": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "next_run_ts": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "auto_mapping": {
+        "type": "string",
+        "enum": [
+          "ENABLED",
+          "DISABLED"
+        ]
+      },
+      "schedule": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "REAL_TIME",
+              "FREQUENCY",
+              "CRON",
+              "LOAD"
+            ]
+          },
+          "schedule": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "suggested_frequencies": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              "min_allowed_frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "max_allowed_frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "cron": {
+                "type": "string"
+              },
+              "destination_tables": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "destination_id": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "schedule_configurable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "webhook_url": {
+        "type": "string"
+      },
+      "priority": {
+        "type": "string",
+        "enum": [
+          "HIGH",
+          "NORMAL"
+        ]
+      },
+      "json_parsing_strategy": {
+        "type": "string",
+        "enum": [
+          "FLAT",
+          "SPLIT",
+          "COLLAPSE",
+          "NATIVE",
+          "NATURAL",
+          "COLLAPSE_EXCEPT_ARRAYS"
+        ]
+      }
+    }
+  }
+}

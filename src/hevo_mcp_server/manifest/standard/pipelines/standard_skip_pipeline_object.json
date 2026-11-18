@@ -1,0 +1,38 @@
+{
+  "name": "standard_skip_pipeline_object",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/pipelines/{id}/objects/{object_name}/skip",
+  "summary": "Skip Pipeline Object",
+  "description": "",
+  "destructive": false,
+  "consequence": "Hevo stops ingesting the data of this object.",
+  "title": "Skip object of Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/skippipelineobject",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "object_name",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

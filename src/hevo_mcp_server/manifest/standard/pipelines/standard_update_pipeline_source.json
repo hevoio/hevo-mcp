@@ -1,0 +1,43 @@
+{
+  "name": "standard_update_pipeline_source",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/source",
+  "summary": "Update Pipeline Source configurations",
+  "description": "",
+  "destructive": false,
+  "consequence": "If the Source credentials are incorrect, the Pipeline cannot read data from the Source.",
+  "title": "Update Source of Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatesourceconfig_1",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "config": {
+          "type": "object"
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

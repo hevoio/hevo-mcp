@@ -1,0 +1,428 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Hevo Data",
+    "description": "Hevo Data APIs allow users to manage their Pipelines in Hevo.<br/><br/>API Key and API Secret can be generated from `Account` > `API Keys` on Hevo UI.<br/>The key and secret generated should be used as Basic auth username and password to authenticate access.",
+    "version": "v2.0"
+  },
+  "servers": [
+    {
+      "url": "https://us.hevodata.com"
+    },
+    {
+      "url": "https://us2.hevodata.com"
+    },
+    {
+      "url": "https://eu.hevodata.com"
+    },
+    {
+      "url": "https://in.hevodata.com"
+    },
+    {
+      "url": "https://asia.hevodata.com"
+    },
+    {
+      "url": "https://au.hevodata.com"
+    }
+  ],
+  "security": [
+    {
+      "BasicAuth": []
+    }
+  ],
+  "paths": {
+    "/api/public/v2.0/accounts/oauth": {
+      "get": {
+        "tags": [
+          "OAuth Accounts"
+        ],
+        "summary": "Get OAuth Accounts",
+        "operationId": "getAllOAuthAccounts",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OAuth accounts found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConnectedAccounts"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v2.0/accounts/oauth/{id}": {
+      "delete": {
+        "tags": [
+          "OAuth Accounts"
+        ],
+        "summary": "Remove OAuth Account",
+        "operationId": "deleteOAuthAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OAuth account was successfully removed."
+          },
+          "404": {
+            "description": "OAuth account does not exist."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "OAuth Accounts"
+        ],
+        "summary": "Get OAuth Account",
+        "operationId": "getOAuthAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OAuth account found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectedAccounts"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "OAuth account does not exist."
+          }
+        }
+      }
+    },
+    "/api/public/v2.0/accounts/users": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Invite user to team",
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExInviteUserRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "User created."
+          },
+          "400": {
+            "description": "Email address was not provided."
+          },
+          "409": {
+            "description": "This email is already registered with us."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all users from team",
+        "operationId": "getAllUsersFromTeam",
+        "responses": {
+          "200": {
+            "description": "Users found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Users"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/v2.0/accounts/users-with-roles": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Invite user to team with roles",
+        "operationId": "createUserWithRoles",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExInviteUserWithRolesRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "User created."
+          },
+          "400": {
+            "description": "Roles must be one of PIPELINE_COLLABORATOR, PIPELINE_ADMIN, ACTIVATION_COLLABORATOR, ACTIVATION_ADMIN, MODELS_AND_WORKFLOWS_COLLABORATOR, MODELS_AND_WORKFLOWS_ADMIN, BILLING_ADMIN, TEAM_COLLABORATOR, TEAM_ADMIN, OBSERVER"
+          },
+          "409": {
+            "description": "This email is already registered with us."
+          }
+        }
+      }
+    },
+    "/api/public/v2.0/accounts/users/{email}": {
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete user",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User was successfully removed from team."
+          },
+          "400": {
+            "description": "Users cannot remove themselves."
+          },
+          "404": {
+            "description": "User not found in your team."
+          },
+          "409": {
+            "description": "Only team owner is allowed to remove users from the team."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user role",
+        "operationId": "updateUserRole",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExUpdateUserRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "User role successfully updated."
+          },
+          "403": {
+            "description": "Only team owner is allowed to transfer ownership."
+          }
+        }
+      }
+    },
+    "/api/public/v2.0/accounts/users/{email}/roles": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user roles",
+        "operationId": "updateUserRolesForRBAC",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExUpdateUserRolesRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "User roles successfully updated."
+          },
+          "403": {
+            "description": "Only team administrator is allowed to transfer ownership."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConnectedAccounts": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "OAUTH_ACCOUNT",
+              "SERVICE_ACCOUNT"
+            ]
+          },
+          "created_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "authenticated_user": {
+            "type": "string"
+          }
+        }
+      },
+      "ExInviteUserRequestDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "ExInviteUserWithRolesRequestDTO": {
+        "required": [
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ExUpdateUserRequestDTO": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "MEMBER",
+              "OWNER"
+            ]
+          }
+        }
+      },
+      "ExUpdateUserRolesRequestDTO": {
+        "required": [
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Users": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "MEMBER",
+              "OWNER"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BasicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}

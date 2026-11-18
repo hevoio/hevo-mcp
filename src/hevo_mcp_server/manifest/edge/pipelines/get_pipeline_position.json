@@ -1,0 +1,104 @@
+{
+  "name": "get_pipeline_position",
+  "product": "edge",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/pipelines/{pipeline_id}/position",
+  "summary": "Get Replication Position of a Pipeline",
+  "description": "Retrieves the replication position of each active object in the specified `pipeline_id`. Each object replicates independently, so a Pipeline has no single overall position. The response lists the objects in the `ACTIVE` status and those that are being reset. A selected object in the `BLOCKED` or `INCONSISTENT` status is not listed. The offset identifies the last point in your Source that Hevo has replicated for an object. Hevo returns the value as it reads it from your Source, and you cannot use it to restart replication from that point. Its format depends on the Source type:\n\n- PostgreSQL, MySQL and Oracle return the UTC time of the last change that Hevo replicated, such as `Aug 27, 2026 13:05 UTC` for PostgreSQL and `Aug 27, 2026, 13:05 UTC` for MySQL and Oracle.\n- SQL Server returns the commit and change log sequence numbers, such as `Commit LSN: 00000034:00000158:0004, Change LSN: 00000034:00000158:0003`.\n- PostgreSQL in XMIN mode returns the `xmin` value on its own.\n- A SaaS Source returns the keys that it tracks and their values, such as `updated_at:1756833130123`.\n\nA value of `-` means that Hevo has not read a change for the object yet.\n\nHevo returns `null` as the position of an object that it has not ingested yet, and for every object in the response if the position is temporarily unavailable. The request still succeeds in both cases, so retry later. The response returns an empty list until Hevo reads the objects from your Source.\n\nRefer to [Tracking Replication Progress](/reference/managing-objects-in-pipelines#tracking-replication-progress) for more information about how replication progress is tracked.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-pipelines-pipeline-id-position",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Pipeline.",
+      "in": "path",
+      "name": "pipeline_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "Value used to retrieve the next set of results. Provide the `next_cursor` value returned in the previous API response. The cursor is valid only for the position list of the same Pipeline. Send back the `next_cursor` value exactly as you received it.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Maximum number of results the API should return. If not set, the API returns up to 100 items.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 500,
+        "minimum": 1,
+        "type": "integer"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "enum": [
+          "Success"
+        ],
+        "type": "string"
+      },
+      "data": {
+        "description": "List containing the replication position of each active object.",
+        "items": {
+          "properties": {
+            "fully_qualified_name": {
+              "description": "Name of the object, qualified by its Source database and schema, as the List All Pipeline Objects endpoint returns it. This field, and `name`, are left out when Hevo cannot determine the name.",
+              "type": "string"
+            },
+            "name": {
+              "description": "Name that your Source uses for this object.",
+              "type": "string"
+            },
+            "position": {
+              "description": "Offset up to which Hevo has replicated this object, indicating its progress. This is `null` until Hevo ingests the object for the first time. It is also `null` for every object in the response when the position is temporarily unavailable. Its format depends on the Source type. You cannot use this value to restart replication from that point. For example, a PostgreSQL, MySQL or Oracle Source returns the UTC time of the last change that Hevo replicated.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "next_cursor": {
+        "description": "Value you can use to fetch the next set of results. Specify this value in the `cursor` query parameter to fetch additional results. This is `null` when no more results are available.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "has_more": {
+        "description": "Indicates whether more results are available.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "data",
+      "has_more"
+    ],
+    "type": "object"
+  }
+}

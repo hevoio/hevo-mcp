@@ -1,0 +1,282 @@
+{
+  "name": "list_pipeline_objects",
+  "product": "edge",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/pipelines/{pipeline_id}/objects",
+  "summary": "List All Pipeline Objects",
+  "description": "Retrieves a list of objects for the specified `pipeline_id`. The response includes each object's name, its location in the Source, the Destination table it loads into, and its current status. The response returns an empty list until Hevo reads the objects from your Source.\n\nRefer to [Managing Objects in Pipelines](/reference/managing-objects-in-pipelines) for more information about object statuses and how to choose the objects that Hevo replicates.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-pipelines-pipeline-id-objects",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Pipeline.",
+      "in": "path",
+      "name": "pipeline_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "Value used to retrieve the next set of results. Provide the `next_cursor` value returned in the previous API response.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Maximum number of results the API should return. If not set, the API returns up to 100 items.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 500,
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "description": "Returns only the objects in the specified statuses. To filter by more than one status, repeat the parameter. For example, to list the objects that are active along with those that are blocked, specify `?status=ACTIVE&status=BLOCKED`. This value is not case-sensitive. If you do not send this parameter, Hevo returns the objects in every status except `DELETED`. Deleted objects are returned only when you specify `DELETED`. A comma-separated list is read as one unknown value and returns a 400.\n\nMost Pipelines report only `ACTIVE`, `INACTIVE`, `DELETED`, `INACCESSIBLE` and `INCONSISTENT`. For such a Pipeline, filtering on `BLOCKED`, `DISABLED` or `RESETTING` always returns an empty list.\n",
+      "explode": true,
+      "in": "query",
+      "name": "status",
+      "required": false,
+      "schema": {
+        "items": {
+          "enum": [
+            "ACTIVE",
+            "BLOCKED",
+            "DELETED",
+            "DISABLED",
+            "INACCESSIBLE",
+            "INACTIVE",
+            "INCONSISTENT",
+            "RESETTING"
+          ],
+          "type": "string",
+          "x-enumDescriptions": {
+            "ACTIVE": "Object is being replicated.",
+            "BLOCKED": "The object is not replicated because the schema evolution setting of the Pipeline blocks it.",
+            "DELETED": "Object has been deleted from the Pipeline.",
+            "DISABLED": "Object has been disabled and is not being replicated.",
+            "INACCESSIBLE": "Object cannot be accessed at the Source.",
+            "INACTIVE": "Object is not selected for replication.",
+            "INCONSISTENT": "A schema change left the object inconsistent with its Destination table, and the object is not being replicated. To replicate the object again, resync it.",
+            "RESETTING": "Object is being reset. Hevo replicates its data again from the beginning once the reset finishes."
+          }
+        },
+        "type": "array"
+      },
+      "style": "form"
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "enum": [
+          "Success"
+        ],
+        "type": "string"
+      },
+      "data": {
+        "description": "List containing the details of each object.",
+        "items": {
+          "properties": {
+            "fully_qualified_name": {
+              "description": "Name of the object, qualified by its Source database and schema. This value identifies the object in every other object endpoint. Send it in the path of Get Details of a Pipeline Object. Send it in the `objects[].name` field when you manage objects, and in the `object_names` field when you trigger a resync. The response does not carry a separate identifier.",
+              "type": "string"
+            },
+            "name": {
+              "description": "Name that your Source uses for this object.",
+              "type": "string"
+            },
+            "schema": {
+              "description": "Name of the schema that contains this object in your Source. This field is not returned if your Source does not use schemas.",
+              "type": "string"
+            },
+            "database": {
+              "description": "Name of the database that contains this object in your Source. This field is not returned if your Source does not use databases.",
+              "type": "string"
+            },
+            "destination": {
+              "description": "Details of the Destination table for this object.",
+              "properties": {
+                "table": {
+                  "description": "Name of the table that Hevo creates for this object in your Destination.",
+                  "type": "string"
+                },
+                "schema": {
+                  "description": "Name of the schema that contains this table in your Destination. This field is not returned if your Destination does not use schemas.",
+                  "type": "string"
+                },
+                "database": {
+                  "description": "Name of the database that contains this table in your Destination. This field is not returned if your Destination does not use databases.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "status": {
+              "description": "Current status of the object in the Pipeline.",
+              "enum": [
+                "ACTIVE",
+                "BLOCKED",
+                "DELETED",
+                "DISABLED",
+                "INACCESSIBLE",
+                "INACTIVE",
+                "INCONSISTENT",
+                "RESETTING"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "ACTIVE": "Object is being replicated.",
+                "BLOCKED": "The object is not replicated because the schema evolution setting of the Pipeline blocks it.",
+                "DELETED": "Object has been deleted from the Pipeline.",
+                "DISABLED": "Object has been disabled and is not being replicated.",
+                "INACCESSIBLE": "Object cannot be accessed at the Source.",
+                "INACTIVE": "Object is not selected for replication.",
+                "INCONSISTENT": "A schema change left the object inconsistent with its Destination table, and the object is not being replicated. To replicate the object again, resync it.",
+                "RESETTING": "Object is being reset. Hevo replicates its data again from the beginning once the reset finishes."
+              }
+            },
+            "selected": {
+              "description": "Indicates whether the Pipeline replicates this object.",
+              "type": "boolean"
+            },
+            "load_mode": {
+              "description": "Mode used to load data from the Source object into the Destination table. This object uses the Pipeline's load mode unless you set a different one for it.",
+              "enum": [
+                "APPEND",
+                "MERGE",
+                "HISTORY_TRACKING",
+                "OVERWRITE"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "APPEND": "New records are added at the end of your Destination table without modifying or deleting any existing data.",
+                "MERGE": "Existing records are updated based on matching criteria, such as primary keys, and new records are added to your Destination table if no match is found.",
+                "HISTORY_TRACKING": "Every version of a record is retained in your Destination table as the record changes in the Source. Each change is added as a new row, alongside timestamps that define the period during which that version was valid.",
+                "OVERWRITE": "Each load replaces all the records in your Destination table. This value is returned for an object of a Pipeline that was created with this load mode. You cannot choose it when you update the Pipeline or its objects."
+              }
+            },
+            "replication": {
+              "description": "Whether the structure of this object has been replicated to your Destination. Hevo does not return this object for every Pipeline. It is not a report of the last data load.",
+              "properties": {
+                "status": {
+                  "description": "Status of the object's schema replication to the Destination.",
+                  "enum": [
+                    "PENDING",
+                    "REPLICATED",
+                    "FAILED",
+                    "INCONSISTENT",
+                    "BLOCKED",
+                    "CANCELED"
+                  ],
+                  "type": "string",
+                  "x-enumDescriptions": {
+                    "PENDING": "A schema change has not been applied to the Destination yet.",
+                    "REPLICATED": "The structure of the Destination table is up to date.",
+                    "FAILED": "Hevo tried to apply a schema change to the Destination, and it failed.",
+                    "INCONSISTENT": "Schema evolution for the object is in an inconsistent state.",
+                    "BLOCKED": "The object is blocked, so its schema is not replicated.",
+                    "CANCELED": "Replication of the object was canceled and did not complete."
+                  }
+                },
+                "reason": {
+                  "description": "Reason that Hevo reports for the status. This field is always present when `replication` is, and its value is `null` when there is nothing to report.",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "position": {
+              "description": "Offset up to which Hevo has replicated this object, indicating its progress. This is `null` until Hevo ingests the object for the first time, and also when the offset is temporarily unavailable. Its format depends on the Source type. You cannot use this value to restart replication from that point. A PostgreSQL, MySQL or Oracle Source returns the UTC time of the last change that Hevo replicated. For example, a PostgreSQL Source returns it as `Aug 27, 2026 13:05 UTC`, and a MySQL or Oracle Source as `Aug 27, 2026, 13:05 UTC`.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "created_at": {
+              "description": "Timestamp when the object was added to the Pipeline, in <a href=\"https://en.wikipedia.org/wiki/Unix_time\" target=\"_blank\" rel=\"noopener noreferrer\">Unix epoch time</a> (in milliseconds). This field, and the `destination` object, are absent for an object that has never been selected for replication.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "group": {
+              "description": "Name of the group that this object belongs to. This field is returned only for a grouped object.",
+              "type": "string"
+            },
+            "child_selection_mode": {
+              "description": "Rule that determines how the objects inside the group are selected. This field is returned only for a grouped object.",
+              "enum": [
+                "AUTO_FOLLOW_HEAD",
+                "REQUIRE_HEAD_SELECTED",
+                "INDEPENDENT"
+              ],
+              "type": "string"
+            },
+            "parent_object": {
+              "description": "Fully qualified name of the parent object that this object belongs to. This object is selected and resynced along with its parent object. This field is not returned for an object that has no parent object.",
+              "type": "string"
+            },
+            "selectable": {
+              "description": "Indicates whether you can change whether this object is replicated.",
+              "type": "boolean"
+            },
+            "resync_allowed": {
+              "description": "Indicates whether the object can be resynced. This value is _false_ for an object that has a parent object, because such an object cannot be resynced on its own, and for any other object that Hevo cannot resync on its own. This field is absent when Hevo cannot read the object’s rules.",
+              "type": "boolean"
+            },
+            "allow_load_mode_selection": {
+              "description": "Indicates whether you can change the load mode of this object.",
+              "type": "boolean"
+            },
+            "allowed_load_modes": {
+              "description": "Load modes that you can set on this object. This field is returned only when there is at least one.",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "next_cursor": {
+        "description": "Value you can use to fetch the next set of results. Specify this value in the `cursor` query parameter to fetch additional results. This is `null` when no more results are available.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "has_more": {
+        "description": "Indicates whether more results are available.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "data",
+      "has_more"
+    ],
+    "type": "object"
+  }
+}

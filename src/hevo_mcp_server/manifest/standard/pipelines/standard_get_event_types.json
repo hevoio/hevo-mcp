@@ -1,0 +1,80 @@
+{
+  "name": "standard_get_event_types",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/pipelines/{id}/event-types",
+  "summary": "Get Event types for a Pipeline",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/geteventtypes",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "search_text",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "starting_after",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "schema": {
+        "type": "integer",
+        "format": "int32",
+        "default": 100
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "event_type": {
+          "type": "string"
+        },
+        "auto_mapping": {
+          "type": "string",
+          "enum": [
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "mapping_status": {
+          "type": "string",
+          "enum": [
+            "MAPPED",
+            "UNMAPPED",
+            "INCOMPLETE",
+            "IGNORED",
+            "MAPPING_IN_PROGRESS"
+          ]
+        }
+      }
+    }
+  }
+}

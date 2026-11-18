@@ -1,0 +1,67 @@
+# Runs on every push and pull request: secret scan, lint, manifest freshness, tests, dependency audit, the
+# package as a customer installs it, and the HTTP server's startup. The manifest check fails if someone changed openapi/
+# or endpoint_overrides.json without rerunning build_manifest.py, so the shipped tools always match the
+# committed specs.
+#
+# This workflow needs no secrets. Syncing the specs and live checks against Hevo are run by Hevo maintainers
+# outside this repository (by hand today, on a schedule later) and reach it as ordinary pull requests.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    # Fails if a commit adds anything that looks like a live credential (keys, tokens, private keys).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        with:
+          fetch-depth: 0
+      - uses: trufflesecurity/trufflehog@ea68ca03c865c5f324e86e849ced20ed3cf9dbbb  # v3.99.8
+        with:
+          extra_args: --results=verified,unknown
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked  # fails if uv.lock is out of step with pyproject.toml
+      - name: Lint
+        run: uvx ruff check .
+      - name: Manifest matches the specs
+        run: uv run python build_manifest.py --check
+      - name: Tests
+        run: uv run pytest -q
+      - name: Dependency audit
+        run: uvx pip-audit --strict --desc on -r <(uv export --frozen --no-dev --no-hashes --no-emit-project)
+        shell: bash
+
+  package:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5
+        with:
+          python-version: "3.12"
+      - name: Build, install in a clean environment and run as a customer would (stdio)
+        run: |
+          uv build
+          uv venv /tmp/pkg
+          VIRTUAL_ENV=/tmp/pkg uv pip install dist/*.whl
+          cd /tmp && /tmp/pkg/bin/python -I "$GITHUB_WORKSPACE/scripts/package_check.py" /tmp/pkg/bin/hevo-mcp
+      - name: HTTP server starts, answers /health-check and refuses a call without a key
+        run: |
+          /tmp/pkg/bin/hevo-mcp --transport http --port 8000 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/health-check && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8000/health-check | grep -q '"status": *"ok"'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8000/mcp)" = "401"

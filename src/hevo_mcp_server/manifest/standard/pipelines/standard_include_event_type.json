@@ -1,0 +1,38 @@
+{
+  "name": "standard_include_event_type",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/pipelines/{id}/event-types/{event_type}/include",
+  "summary": "Include an Event type",
+  "description": "",
+  "destructive": false,
+  "consequence": "Hevo starts loading the Events of this Event Type again.",
+  "title": "Include Event Type in Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/includeeventtype",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "event_type",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

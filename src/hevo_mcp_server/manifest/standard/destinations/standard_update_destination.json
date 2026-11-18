@@ -1,0 +1,365 @@
+{
+  "name": "standard_update_destination",
+  "product": "standard",
+  "resource": "destinations",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/destinations/{id}",
+  "summary": "Update Destination configurations",
+  "description": "",
+  "destructive": false,
+  "consequence": "Affects every Pipeline that loads data into this Destination. If the credentials are incorrect, these Pipelines cannot load data.",
+  "title": "Update Standard Destination",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatesourceconfig",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "config": {
+          "oneOf": [
+            {
+              "title": "BIGQUERY",
+              "type": "object",
+              "properties": {
+                "bucket": {
+                  "type": "string"
+                },
+                "populate_loaded_timestamp": {
+                  "type": "boolean"
+                },
+                "oauth_account_id": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "project_id": {
+                  "type": "string"
+                },
+                "enable_streaming_inserts": {
+                  "type": "boolean"
+                },
+                "dataset_name": {
+                  "type": "string"
+                },
+                "service_account_id": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            {
+              "title": "DATABRICKS",
+              "type": "object",
+              "properties": {
+                "vacuum_delta_tables": {
+                  "type": "boolean"
+                },
+                "populate_loaded_timestamp": {
+                  "type": "boolean"
+                },
+                "port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "optimize_delta_tables": {
+                  "type": "boolean"
+                },
+                "http_path": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "server_hostname": {
+                  "type": "string"
+                },
+                "personal_access_token": {
+                  "type": "string"
+                },
+                "external_location": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "MYSQL",
+              "type": "object",
+              "properties": {
+                "ssh_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "db_user": {
+                  "type": "string"
+                },
+                "ssh_host": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "db_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_host": {
+                  "type": "string"
+                },
+                "db_password": {
+                  "type": "string"
+                },
+                "ssh_user": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "POSTGRES",
+              "type": "object",
+              "properties": {
+                "ssh_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "use_ssl": {
+                  "type": "boolean"
+                },
+                "db_user": {
+                  "type": "string"
+                },
+                "ssh_host": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "db_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_host": {
+                  "type": "string"
+                },
+                "db_password": {
+                  "type": "string"
+                },
+                "ssh_user": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "MS_SQL",
+              "type": "object",
+              "properties": {
+                "ssh_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "db_user": {
+                  "type": "string"
+                },
+                "ssh_host": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "db_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_host": {
+                  "type": "string"
+                },
+                "db_password": {
+                  "type": "string"
+                },
+                "ssh_user": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "AZURE_SYNAPSE",
+              "type": "object",
+              "properties": {
+                "populate_loaded_timestamp": {
+                  "type": "boolean"
+                },
+                "ssh_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "db_user": {
+                  "type": "string"
+                },
+                "ssh_host": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "db_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_host": {
+                  "type": "string"
+                },
+                "db_password": {
+                  "type": "string"
+                },
+                "ssh_user": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "SNOWFLAKE",
+              "type": "object",
+              "properties": {
+                "populate_loaded_timestamp": {
+                  "type": "boolean"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "account_name": {
+                  "type": "string"
+                },
+                "db_user": {
+                  "type": "string"
+                },
+                "private_key": {
+                  "type": "string"
+                },
+                "passphrase": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string"
+                },
+                "warehouse": {
+                  "type": "string"
+                },
+                "authentication_type": {
+                  "type": "string"
+                },
+                "db_password": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "REDSHIFT",
+              "type": "object",
+              "properties": {
+                "populate_loaded_timestamp": {
+                  "type": "boolean"
+                },
+                "ssh_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "db_user": {
+                  "type": "string"
+                },
+                "ssh_host": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "db_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_host": {
+                  "type": "string"
+                },
+                "db_password": {
+                  "type": "string"
+                },
+                "ssh_user": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "AURORA",
+              "type": "object",
+              "properties": {
+                "ssh_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "db_user": {
+                  "type": "string"
+                },
+                "ssh_host": {
+                  "type": "string"
+                },
+                "schema_name": {
+                  "type": "string"
+                },
+                "db_port": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "db_host": {
+                  "type": "string"
+                },
+                "db_password": {
+                  "type": "string"
+                },
+                "ssh_user": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

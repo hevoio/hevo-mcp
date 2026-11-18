@@ -1,0 +1,30 @@
+{
+  "name": "standard_run_model",
+  "product": "standard",
+  "resource": "models",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/models/{id}/run-now",
+  "summary": "Run Model",
+  "description": "",
+  "destructive": false,
+  "consequence": "Starts a run of this Model.",
+  "title": "Run Model",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/schedulemodeltorunnow",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

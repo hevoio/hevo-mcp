@@ -1,0 +1,110 @@
+{
+  "name": "list_destination_connectors",
+  "product": "edge",
+  "resource": "metadata",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/metadata/destinations/connectors",
+  "summary": "List All Destination Connectors",
+  "description": "Retrieves the Destination connectors available to your team, including their identifier, type, name, description, and documentation link. The connectors are ordered by `connector_id`.\n\nUse the `connector_id` value returned in this response to call the [Get Configuration Details of a Destination Connector](/reference/get_api-v2-metadata-destinations-connectors-connector-id) endpoint and retrieve the configuration settings that the connector accepts. Connectors that your team does not have access to are not listed. A connector in beta is listed only if it has been enabled for your team. The list is also limited to the Destination types that your Hevo region supports, so it can differ between regions.\n\nRead [Find the Destination Connector](/reference/creating-destinations-with-hevo-api#step-1-find-the-destination-connector) for the steps to find the connector for your Destination.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-metadata-destinations-connectors",
+  "parameters": [
+    {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "Value used to retrieve the next set of results. Provide the `next_cursor` value returned in the previous API response.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Maximum number of results the API should return. If not set, the API returns up to 100 items.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 500,
+        "minimum": 1,
+        "type": "integer"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "type": "string"
+      },
+      "data": {
+        "description": "List of Destination connectors available to your team.",
+        "items": {
+          "properties": {
+            "connector_id": {
+              "description": "Unique identifier of the connector. For example, _snowflake_. Send this as `connector_id` while creating a Destination.",
+              "type": "string"
+            },
+            "type": {
+              "description": "Type of the Destination that the connector loads data into. For example, _SNOWFLAKE_. This value is optional while creating a Destination. If you send it, it must match the `connector_id`.",
+              "type": "string"
+            },
+            "display_name": {
+              "description": "Display name of the Destination. For example, _Snowflake_.",
+              "type": "string"
+            },
+            "description": {
+              "description": "Short explanation of what the Destination is used for.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "documentation_url": {
+              "description": "Link to the documentation for this Destination.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "in_beta": {
+              "description": "Indicates whether the connector is in beta. A connector in beta is listed only if it has been enabled for your team.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "connector_id",
+            "type",
+            "display_name"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "next_cursor": {
+        "description": "Value you can use to fetch the next set of results. Specify this value in the `cursor` query parameter to fetch additional results. This is `null` when no more results are available.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "has_more": {
+        "description": "Indicates whether more results are available.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "data",
+      "has_more"
+    ],
+    "type": "object"
+  }
+}

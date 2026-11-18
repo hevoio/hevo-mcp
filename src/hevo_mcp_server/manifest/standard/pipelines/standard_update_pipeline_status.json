@@ -1,0 +1,44 @@
+{
+  "name": "standard_update_pipeline_status",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/status",
+  "summary": "Update Pipeline activity status",
+  "description": "",
+  "destructive": false,
+  "consequence": "Pausing stops the Pipeline from reading data from the Source and loading it into the Destination.",
+  "title": "Pause or resume Standard Pipeline",
+  "approval": "unless_activating",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatepipelineactivitystatus",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "PAUSED"
+          ]
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

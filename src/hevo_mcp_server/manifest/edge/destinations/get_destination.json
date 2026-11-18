@@ -1,0 +1,125 @@
+{
+  "name": "get_destination",
+  "product": "edge",
+  "resource": "destinations",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/destinations/{destination_id}",
+  "summary": "Get Details of a Destination",
+  "description": "Retrieves details of the Destination with the specified `destination_id`, including its name, connector, type, status, and configuration settings. Credentials in the configuration settings are masked.",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-destinations-destination-id",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Destination, as returned by the [List All Destinations](/reference/get_api-v2-destinations) endpoint.",
+      "in": "path",
+      "name": "destination_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "object",
+    "required": [
+      "code",
+      "data"
+    ],
+    "properties": {
+      "code": {
+        "type": "string",
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "enum": [
+          "Success",
+          "Accepted"
+        ]
+      },
+      "data": {
+        "type": "object",
+        "description": "Details of the Destination.",
+        "required": [
+          "id",
+          "name",
+          "connector_id",
+          "type",
+          "config"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier of the Destination."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the Destination in Hevo."
+          },
+          "connector_id": {
+            "type": "string",
+            "description": "Identifier of the connector that loads data into this Destination. This is the `connector_id` value that the Destination was created with. For example, _snowflake_."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the Destination. This is the `type` value that the Destination was created with. For example, _SNOWFLAKE_."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "FAILED"
+            ],
+            "description": "Current status of the Destination.\n\nA Destination that is being deleted, or has been deleted, is not returned in the response.\n",
+            "x-enumDescriptions": {
+              "CREATED": "The Destination is ready to receive data.",
+              "FAILED": "Hevo created the Destination but could not complete its setup. You cannot use a Destination in this status in a Pipeline. Delete it and create it again."
+            }
+          },
+          "config": {
+            "type": "object",
+            "description": "Configuration settings of the Destination, with credentials masked. The settings returned depend on the connector. Refer to [Read the Connector Configuration](/reference/creating-destinations-with-hevo-api#step-1-read-the-connector-configuration) for more information about the settings that each connector accepts.",
+            "additionalProperties": false
+          },
+          "created_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Timestamp when the Destination was created, in <a href=\"https://en.wikipedia.org/wiki/Unix_time\" target=\"_blank\" rel=\"noopener noreferrer\">Unix epoch time</a> (in milliseconds)."
+          },
+          "created_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Email address of the user who created the Destination."
+          },
+          "updated_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Timestamp when the Destination was last updated, in Unix epoch time (in milliseconds)."
+          },
+          "updated_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Email address of the user who last updated the Destination."
+          }
+        }
+      }
+    }
+  }
+}

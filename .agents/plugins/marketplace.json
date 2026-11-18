@@ -1,0 +1,21 @@
+{
+  "name": "hevo-data",
+  "interface": {
+    "displayName": "Hevo"
+  },
+  "plugins": [
+    {
+      "name": "hevo-data",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/hevoio/hevo-mcp.git",
+        "ref": "v1.0.0"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Data"
+    }
+  ]
+}

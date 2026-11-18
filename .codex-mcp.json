@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "hevo": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "hevo-mcp==1.0.0",
+        "-c",
+        "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt",
+        "hevo-mcp"
+      ],
+      "env_vars": [
+        "HEVO_KEYS_DIR",
+        "HEVO_MCP_DEFAULT_SCOPE",
+        "HOME"
+      ]
+    }
+  }
+}

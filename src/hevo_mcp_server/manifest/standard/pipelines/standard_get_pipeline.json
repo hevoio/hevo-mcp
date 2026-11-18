@@ -1,0 +1,336 @@
+{
+  "name": "standard_get_pipeline",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/pipelines/{id}",
+  "summary": "Get Pipeline",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getpipeline",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "health_status": {
+        "type": "string",
+        "enum": [
+          "OK",
+          "FAILED"
+        ]
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "PAUSED"
+        ]
+      },
+      "source": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "DATABASES_AND_FILES",
+                    "ENGINEERING",
+                    "FINANCE_AND_ACCOUNTING",
+                    "MARKETING_ANALYTICS",
+                    "PRODUCT",
+                    "SALES_AND_SUPPORT",
+                    "DATABASES",
+                    "CRM",
+                    "MARKETING",
+                    "CHAT",
+                    "FINANCE",
+                    "ECOMMERCE",
+                    "FILE_STORAGE",
+                    "ANALYTICS",
+                    "WAREHOUSES",
+                    "STREAMING",
+                    "COLLABORATION",
+                    "WEBHOOKS",
+                    "FREE",
+                    "UNUSED",
+                    "UPCOMING"
+                  ]
+                }
+              },
+              "logo_url": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "documentation_url": {
+                "type": "string"
+              },
+              "pauseable": {
+                "type": "boolean"
+              },
+              "free": {
+                "type": "boolean"
+              },
+              "disabled": {
+                "type": "boolean"
+              }
+            }
+          },
+          "health_status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "FAILED"
+            ]
+          },
+          "failure_reason": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object"
+          }
+        }
+      },
+      "destination": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "logo_url": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "documentation_url": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PAUSED"
+            ]
+          },
+          "health_status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "FAILED"
+            ]
+          },
+          "failure_reason": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "schedule": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "REAL_TIME",
+                  "FREQUENCY",
+                  "CRON",
+                  "LOAD"
+                ]
+              },
+              "schedule": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "suggested_frequencies": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "min_allowed_frequency": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "max_allowed_frequency": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "cron": {
+                    "type": "string"
+                  },
+                  "destination_tables": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "destination_id": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              },
+              "schedule_configurable": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "last_run_ts": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "next_run_ts": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "auto_mapping": {
+        "type": "string",
+        "enum": [
+          "ENABLED",
+          "DISABLED"
+        ]
+      },
+      "schedule": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "REAL_TIME",
+              "FREQUENCY",
+              "CRON",
+              "LOAD"
+            ]
+          },
+          "schedule": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "suggested_frequencies": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              "min_allowed_frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "max_allowed_frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "cron": {
+                "type": "string"
+              },
+              "destination_tables": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "destination_id": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "schedule_configurable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "webhook_url": {
+        "type": "string"
+      },
+      "priority": {
+        "type": "string",
+        "enum": [
+          "HIGH",
+          "NORMAL"
+        ]
+      },
+      "json_parsing_strategy": {
+        "type": "string",
+        "enum": [
+          "FLAT",
+          "SPLIT",
+          "COLLAPSE",
+          "NATIVE",
+          "NATURAL",
+          "COLLAPSE_EXCEPT_ARRAYS"
+        ]
+      }
+    }
+  }
+}

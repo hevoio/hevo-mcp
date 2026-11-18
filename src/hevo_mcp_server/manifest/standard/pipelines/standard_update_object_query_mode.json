@@ -1,0 +1,149 @@
+{
+  "name": "standard_update_object_query_mode",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/objects/{object_name}/query-mode",
+  "summary": "Update Pipeline Object query mode",
+  "description": "",
+  "destructive": false,
+  "consequence": "Changing the query mode can skip data or load it again.",
+  "title": "Change query mode of object in Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updateobjectquerymode",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "object_name",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "oneOf": [
+            {
+              "title": "unique_incrementing",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                },
+                "unique_column_name": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "salesforce",
+              "type": "object",
+              "properties": {
+                "use_bulk_api": {
+                  "type": "boolean"
+                }
+              }
+            },
+            {
+              "title": "full_load",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "xmin",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "timestamp+incrementing",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                },
+                "incrementing_column_name": {
+                  "type": "string"
+                },
+                "timestamp_column_name": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "change_tracking",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                },
+                "historical_enabled": {
+                  "type": "boolean"
+                },
+                "unique_column_name": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "incrementing",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                },
+                "incrementing_column_name": {
+                  "type": "string"
+                },
+                "stop_on_gap": {
+                  "type": "boolean"
+                }
+              }
+            },
+            {
+              "title": "timestamp",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                },
+                "timestamp_column_name": {
+                  "type": "string"
+                },
+                "timestamp_delay_interval_ms": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

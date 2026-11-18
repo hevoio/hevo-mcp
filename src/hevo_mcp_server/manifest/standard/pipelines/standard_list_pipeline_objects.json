@@ -1,0 +1,163 @@
+{
+  "name": "standard_list_pipeline_objects",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/pipelines/{id}/objects",
+  "summary": "Get all Pipeline Objects.",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getallpipelineobjects",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "search_text",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "statuses",
+      "in": "query",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "FINISHED",
+            "PAUSED",
+            "SKIPPED",
+            "PERMISSION_DENIED"
+          ]
+        }
+      }
+    },
+    {
+      "name": "category",
+      "in": "query",
+      "schema": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "INACTIVE",
+          "FAILED",
+          "AWAITING_MAPPING",
+          "HAS_FAILED_EVENTS"
+        ]
+      }
+    },
+    {
+      "name": "starting_after",
+      "in": "query",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "schema": {
+        "type": "integer",
+        "format": "int32",
+        "default": 100
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "FINISHED",
+            "PAUSED",
+            "SKIPPED",
+            "PERMISSION_DENIED"
+          ]
+        },
+        "last_run_ts": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "position": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "DEFAULT",
+                "NUMBER",
+                "DATE_TIME",
+                "DATE",
+                "OBJECT",
+                "FILE_BASED",
+                "MULTI_OBJECT",
+                "MONTH_YEAR"
+              ]
+            },
+            "display_position": {
+              "type": "string"
+            },
+            "offset": {
+              "type": "object"
+            },
+            "file_name": {
+              "type": "string"
+            },
+            "field_name": {
+              "type": "string"
+            },
+            "timezone": {
+              "type": "object",
+              "properties": {
+                "offset": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            },
+            "keys": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "month": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "year": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      }
+    }
+  }
+}

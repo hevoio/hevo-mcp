@@ -1,0 +1,46 @@
+{
+  "name": "list_users",
+  "product": "account",
+  "resource": "accounts",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/accounts/users",
+  "summary": "Get all users from team",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getallusersfromteam",
+  "parameters": [],
+  "request_body": null,
+  "response": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "email_verified": {
+          "type": "boolean"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "MEMBER",
+            "OWNER"
+          ]
+        }
+      }
+    }
+  }
+}

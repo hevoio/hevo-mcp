@@ -1,0 +1,38 @@
+{
+  "name": "hevo-data",
+  "version": "1.0.0",
+  "description": "Connects your AI agent to Hevo. Includes the hevo-pipelines skill and the Hevo MCP server, which manages your Pipelines, Destinations, Models, Workflows, team users, and OAuth accounts through the Hevo API.",
+  "author": {
+    "name": "Hevo Data",
+    "url": "https://hevodata.com"
+  },
+  "homepage": "https://hevodata.com",
+  "repository": "https://github.com/hevoio/hevo-mcp",
+  "license": "MIT",
+  "keywords": [
+    "hevo",
+    "data-pipelines",
+    "etl",
+    "elt",
+    "mcp",
+    "edge"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.codex-mcp.json",
+  "interface": {
+    "displayName": "Hevo",
+    "shortDescription": "View and manage your Hevo Pipelines",
+    "longDescription": "Lets your agent view and manage your Pipelines, Destinations, Models, Workflows, team users, and OAuth accounts in Hevo, with your own API credentials. The agent is read-only until you allow changes.",
+    "developerName": "Hevo Data",
+    "category": "Data",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://hevodata.com",
+    "defaultPrompt": [
+      "List my Hevo Pipelines and display the ones that need attention."
+    ]
+  }
+}

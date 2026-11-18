@@ -1,0 +1,29 @@
+{
+  "name": "delete_user",
+  "product": "account",
+  "resource": "accounts",
+  "action": "delete",
+  "method": "DELETE",
+  "path": "/api/public/v2.0/accounts/users/{email}",
+  "summary": "Delete user",
+  "description": "",
+  "destructive": true,
+  "consequence": "Removes the user's access to your Hevo account.",
+  "title": "Remove user {} from team",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/deleteuser",
+  "parameters": [
+    {
+      "name": "email",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

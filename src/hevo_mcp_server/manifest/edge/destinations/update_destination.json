@@ -1,0 +1,145 @@
+{
+  "name": "update_destination",
+  "product": "edge",
+  "resource": "destinations",
+  "action": "write",
+  "method": "PATCH",
+  "path": "/api/v2/destinations/{destination_id}",
+  "summary": "Modify Destination Configuration (PATCH)",
+  "description": "Updates the Destination configuration for the specified `destination_id`. The available settings depend on the Destination type. To retrieve the settings that your Destination currently uses, call the [Get Details of a Destination](/reference/get_api-v2-destinations-destination-id) endpoint. To retrieve every setting that the connector accepts, along with its data type and whether it is required, call the [Get Configuration Details of a Destination Connector](/reference/get_api-v2-metadata-destinations-connectors-connector-id) endpoint.\n\nIn the request body, send only the values that you want to change. Hevo keeps the current value of every field and `config` key that you do not send. When you change the configuration settings, Hevo tests the connection before it saves the change, and the call returns once the test finishes. If the test fails, the request returns a `400` and nothing is saved. A change to only the name is saved without a connection test. Leave out the credentials that you do not want to change. If you send back the masked value (********) that a read returns for a credential, Hevo tests the connection with that value, so the test fails and the request returns a `400`.\n\n**Note:** If you cannot send a `PATCH` request, send the same request body to the [Modify Destination Configuration (POST)](/reference/post_api-v2-destinations-destination-id) endpoint.\n\nRefer to [Modifying a Destination](/reference/modifying-the-destination-configuration#modifying-a-destination) for more information about which settings you can change and how the change is applied.\n",
+  "destructive": false,
+  "consequence": "Affects every Pipeline that loads data into this Destination. If the credentials are incorrect, these Pipelines cannot load data.",
+  "title": "Update Edge Destination",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/patch_api-v2-destinations-destination-id",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Destination, as returned by the [List All Destinations](/reference/get_api-v2-destinations) endpoint.",
+      "in": "path",
+      "name": "destination_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "properties": {
+        "name": {
+          "description": "New name for your Destination, not exceeding 255 characters. The name must start with a letter or a digit, and can contain only letters, digits, spaces, hyphens (-) and underscores (_). Hevo removes any leading and trailing spaces before it checks the name. The name must be unique across your team, including the Destinations in other regions that this endpoint does not list. Sending the name that the Destination already has is accepted.",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "description": "Configuration settings that you want to change. Hevo updates the settings you send, and the settings you leave out keep their stored values. Read the settings that your connector accepts from the [Get Configuration Details of a Destination Connector](/reference/get_api-v2-metadata-destinations-connectors-connector-id) endpoint. Some settings cannot be changed after the Destination is created. A request that sends such a setting is rejected with a `400` that names it, and nothing is saved.\n\nRefer to [Modifying a Destination](/reference/modifying-the-destination-configuration#modifying-a-destination) for the settings that you cannot change.\n",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "required": true
+  },
+  "response": {
+    "type": "object",
+    "required": [
+      "code",
+      "data"
+    ],
+    "properties": {
+      "code": {
+        "type": "string",
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "enum": [
+          "Success",
+          "Accepted"
+        ]
+      },
+      "message": {
+        "type": "string",
+        "description": "Description of the action that Hevo performed."
+      },
+      "data": {
+        "type": "object",
+        "description": "Details of the updated Destination.",
+        "required": [
+          "id",
+          "name",
+          "connector_id",
+          "type",
+          "config"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier of the Destination."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the Destination in Hevo."
+          },
+          "connector_id": {
+            "type": "string",
+            "description": "Identifier of the connector that loads data into this Destination. This is the `connector_id` value that the Destination was created with. For example, _snowflake_."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the Destination. This is the `type` value that the Destination was created with. For example, _SNOWFLAKE_."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "FAILED"
+            ],
+            "description": "Current status of the Destination.",
+            "x-enumDescriptions": {
+              "CREATED": "The Destination is ready to receive data.",
+              "FAILED": "Hevo created the Destination but could not complete its setup. You cannot use a Destination in this status in a Pipeline. Delete it and create it again. A failed connection test during an update does not change the status."
+            }
+          },
+          "config": {
+            "type": "object",
+            "description": "Configuration settings of the Destination, with credentials masked. The settings returned depend on the connector. Refer to [Read the Connector Configuration](/reference/creating-destinations-with-hevo-api#step-1-read-the-connector-configuration) for more information about the settings that each connector accepts.",
+            "additionalProperties": false
+          },
+          "created_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Timestamp when the Destination was created, in <a href=\"https://en.wikipedia.org/wiki/Unix_time\" target=\"_blank\" rel=\"noopener noreferrer\">Unix epoch time</a> (in milliseconds)."
+          },
+          "created_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Email address of the user who created the Destination."
+          },
+          "updated_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Timestamp when the Destination was last updated, in Unix epoch time (in milliseconds)."
+          },
+          "updated_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Email address of the user who last updated the Destination."
+          }
+        }
+      }
+    }
+  }
+}

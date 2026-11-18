@@ -1,0 +1,30 @@
+{
+  "name": "invite_user",
+  "product": "account",
+  "resource": "accounts",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/accounts/users",
+  "summary": "Invite user to team",
+  "description": "",
+  "destructive": false,
+  "consequence": "Gives the invited user access to your Hevo account.",
+  "title": "Invite user to team",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/createuser",
+  "parameters": [],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "required": false
+  },
+  "response": null
+}

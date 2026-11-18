@@ -1,0 +1,254 @@
+{
+  "name": "list_pipeline_jobs",
+  "product": "edge",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/pipelines/{pipeline_id}/jobs",
+  "summary": "List All Jobs for a Pipeline",
+  "description": "Retrieves a list of jobs executed for the specified `pipeline_id`. A job is one run of the Pipeline. It can be the historical load, a scheduled or on-demand incremental sync, a data refresher run, or a resync. The most recently started job is listed first, and each job includes its type, execution status, duration, object-level processing counts, and latency metrics.\n\nRefer to [Viewing Pipeline Job History](/reference/viewing-pipeline-job-history) for more information about job types, job statuses, and the counts each job reports.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-pipelines-pipeline-id-jobs",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Pipeline.",
+      "in": "path",
+      "name": "pipeline_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "Value used to retrieve the next set of results. Provide the `next_cursor` value returned in the previous API response. The cursor holds a position in the list rather than a job, so send the same `limit` and the same filters with it. Jobs are listed newest first, so a job that starts while you are reading the pages moves the other jobs down, and a job can appear on two pages. Remove the repeats by `id`.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Maximum number of results the API should return. If not set, the API returns up to 100 items.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 500,
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "description": "Returns only the jobs in the specified statuses. To filter by more than one status, repeat the parameter. For example, to list the jobs that completed along with those that failed, specify `?status=COMPLETED&status=FAILED`. The response then contains only the jobs in these two statuses. This value is not case-sensitive. The spellings `CANCELLED` and `CANCELLING` are not accepted and return a `400`.",
+      "explode": true,
+      "in": "query",
+      "name": "status",
+      "required": false,
+      "schema": {
+        "items": {
+          "enum": [
+            "IN_PROGRESS",
+            "COMPLETED",
+            "COMPLETED_WITH_FAILURES",
+            "DEFERRED",
+            "DEFERRED_WITH_FAILURES",
+            "FAILED",
+            "CANCELING",
+            "CANCELED",
+            "SKIPPED"
+          ],
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "style": "form"
+    },
+    {
+      "description": "Returns only the jobs of the specified types. To filter by more than one type, repeat the parameter. For example, to list the historical loads along with the resync jobs, specify `?type=HISTORICAL&type=RESYNC`. The response then contains only the jobs of these two types. This value is not case-sensitive.",
+      "explode": true,
+      "in": "query",
+      "name": "type",
+      "required": false,
+      "schema": {
+        "items": {
+          "enum": [
+            "HISTORICAL",
+            "INCREMENTAL",
+            "REFRESHER",
+            "RESYNC",
+            "RESYNC_WITH_DROP_AND_LOAD"
+          ],
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "style": "form"
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "enum": [
+          "Success"
+        ],
+        "type": "string"
+      },
+      "data": {
+        "description": "List containing the job details.",
+        "items": {
+          "properties": {
+            "id": {
+              "description": "Unique identifier of the job.",
+              "type": "string"
+            },
+            "type": {
+              "description": "Type of the job.",
+              "enum": [
+                "HISTORICAL",
+                "INCREMENTAL",
+                "REFRESHER",
+                "RESYNC",
+                "RESYNC_WITH_DROP_AND_LOAD"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "HISTORICAL": "Ingests the existing data from the Source.",
+                "INCREMENTAL": "Processes only new or updated records since the last job run.",
+                "REFRESHER": "Re-reads recent data from your Source to pick up records that arrived late, or that changed after Hevo first replicated them.",
+                "RESYNC": "Re-ingests the data of the Pipeline's objects, or only of the objects you named in an object resync, without dropping the Destination tables.",
+                "RESYNC_WITH_DROP_AND_LOAD": "Re-ingests the data of the Pipeline's objects, or only of the objects you named in an object resync, with the Drop and Load action. Hevo drops and recreates each Destination table with the new schema, and then reloads the data ingested from the Source object."
+              }
+            },
+            "status": {
+              "description": "Current status of the job.",
+              "enum": [
+                "IN_PROGRESS",
+                "COMPLETED",
+                "COMPLETED_WITH_FAILURES",
+                "DEFERRED",
+                "DEFERRED_WITH_FAILURES",
+                "FAILED",
+                "CANCELING",
+                "CANCELED",
+                "SKIPPED"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "IN_PROGRESS": "Job is currently running.",
+                "COMPLETED": "The job finished successfully and all records were processed.",
+                "COMPLETED_WITH_FAILURES": "Job finished execution but some records or objects failed to process.",
+                "DEFERRED": "Job finished, but the rate limit of the Source interrupted the ingestion of one or more objects. Hevo loaded the data that it ingested for those objects to the Destination.",
+                "DEFERRED_WITH_FAILURES": "Job finished, but the rate limit of the Source interrupted the ingestion of one or more objects, and one or more objects have failed Events.",
+                "FAILED": "Job failed due to an error.",
+                "CANCELING": "Job cancellation is currently in progress.",
+                "CANCELED": "Job was canceled and did not complete.",
+                "SKIPPED": "Job was skipped."
+              }
+            },
+            "created_at": {
+              "description": "Timestamp when the job started, in <a href=\"https://en.wikipedia.org/wiki/Unix_time\" target=\"_blank\" rel=\"noopener noreferrer\">Unix epoch time</a> (in milliseconds).",
+              "format": "int64",
+              "type": "integer"
+            },
+            "updated_at": {
+              "description": "Timestamp when the job last changed, in Unix epoch time (in milliseconds).",
+              "format": "int64",
+              "type": "integer"
+            },
+            "events_ingested": {
+              "description": "Number of Events ingested from the objects processed in the job.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "events_loaded": {
+              "description": "Number of Events loaded to the Destination for the objects processed in the job.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "events_failed": {
+              "description": "Number of Events that were not loaded to the Destination.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "objects_success": {
+              "description": "Number of objects processed successfully.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "objects_queued": {
+              "description": "Number of objects waiting to be processed.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "objects_skipped": {
+              "description": "Number of objects skipped during processing.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "objects_failed": {
+              "description": "Number of objects that failed processing.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "duration": {
+              "description": "Time taken to execute the job (in milliseconds). For a job that is still running, this value is the time elapsed since the job started, and it increases with each request.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "latency": {
+              "description": "Time taken for Events to be loaded into the Destination (in milliseconds). Its `min`, `max` and `mean` values are 0 when Hevo has not measured the latency of the job, as for a historical load or a resync.",
+              "properties": {
+                "min": {
+                  "description": "Minimum object-level latency (in milliseconds).",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "max": {
+                  "description": "Maximum object-level latency (in milliseconds).",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "mean": {
+                  "description": "Average latency across the Source objects processed in the job (in milliseconds).",
+                  "format": "int64",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "next_cursor": {
+        "description": "Value you can use to fetch the next set of results. Specify this value in the `cursor` query parameter to fetch additional results. This is `null` when no more results are available.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "has_more": {
+        "description": "Indicates whether more results are available.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "data",
+      "has_more"
+    ],
+    "type": "object"
+  }
+}

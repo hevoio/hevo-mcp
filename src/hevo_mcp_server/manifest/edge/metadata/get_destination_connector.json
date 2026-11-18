@@ -1,0 +1,71 @@
+{
+  "name": "get_destination_connector",
+  "product": "edge",
+  "resource": "metadata",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/metadata/destinations/connectors/{connector_id}",
+  "summary": "Get Configuration Details of a Destination Connector",
+  "description": "Retrieves the configuration settings that a Destination connector accepts, including their data type, whether they are required, their default value, and the values they allow.\n\nHevo returns these settings as a <a href=\"https://json-schema.org/draft/2020-12\" target=\"_blank\" rel=\"noopener noreferrer\">JSON schema draft 2020-12</a> definition, in which the settings specific to the connector are grouped under `config`. Use this schema to build the request body that you send to the [Create a Destination](/reference/post_api-v2-destinations) endpoint or in the `destination` object that you send to the [Create a Pipeline](/reference/post_api-v2-pipelines) endpoint, or to validate it before you send the request.\n\nThe schema states the following:\n\n- A key listed under `required` must always be sent. A key that Hevo fills with a default value when it is not sent is not required.\n- A key that applies only under a condition, such as the credentials of a specific authentication method, is defined in an `if`/`then` block inside `allOf`, and is required only when that condition is met.\n- A credential is a string marked `writeOnly: true` and `format: password`. Credentials are accepted while creating a Destination, or when you modify it, and are masked in every response.\n- A key that accepts a fixed set of values is defined as a `oneOf` list of `const` values, each with its display name in `title`.\n- If the value of a key must be in a particular format, the key is defined with a `pattern`, which is a regular expression that the value must match. Hevo rejects a value that does not match it.\n\nRefer to [Read the Connector Configuration](/reference/creating-destinations-with-hevo-api#step-1-read-the-connector-configuration) for more information about how to read this schema and build a request from it.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-metadata-destinations-connectors-connector-id",
+  "parameters": [
+    {
+      "description": "Unique identifier of the connector, as returned by the [List All Destination Connectors](/reference/get_api-v2-metadata-destinations-connectors) endpoint. Send this value exactly as that endpoint returns it.",
+      "in": "path",
+      "name": "connector_id",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "type": "string"
+      },
+      "data": {
+        "description": "Configuration details of the connector.",
+        "properties": {
+          "connector_id": {
+            "description": "Unique identifier of the connector.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Type of the Destination that the connector loads data into.",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "Display name of the Destination.",
+            "type": "string"
+          },
+          "schema": {
+            "description": "JSON schema of the request body that you send while creating a Destination with this connector. The keys of this object are JSON schema keywords and the configuration keys of the connector, spelled exactly as you send them.",
+            "type": "object",
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "connector_id",
+          "type",
+          "display_name",
+          "schema"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "code",
+      "data"
+    ],
+    "type": "object"
+  }
+}

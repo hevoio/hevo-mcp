@@ -1,0 +1,95 @@
+{
+  "name": "standard_get_object_position",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/pipelines/{id}/objects/{object_name}/position",
+  "summary": "Get Object position",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getobjectposition",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "object_name",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "DEFAULT",
+            "NUMBER",
+            "DATE_TIME",
+            "DATE",
+            "OBJECT",
+            "FILE_BASED",
+            "MULTI_OBJECT",
+            "MONTH_YEAR"
+          ]
+        },
+        "display_position": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "object"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "field_name": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "object",
+          "properties": {
+            "offset": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "month": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    }
+  }
+}

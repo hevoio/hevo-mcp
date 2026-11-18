@@ -1,0 +1,126 @@
+{
+  "name": "standard_get_workflow",
+  "product": "standard",
+  "resource": "workflows",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/workflows/{id}",
+  "summary": "Get Workflow",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getworkflow",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "name": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "DRAFT",
+          "COMPLETED",
+          "SCHEDULED",
+          "PAUSED",
+          "QUEUED",
+          "RUNNING",
+          "CANCELLED",
+          "SUCCESS",
+          "FAILED"
+        ]
+      },
+      "schedule": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "REAL_TIME",
+              "FREQUENCY",
+              "CRON",
+              "LOAD"
+            ]
+          },
+          "schedule": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "suggested_frequencies": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              "min_allowed_frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "max_allowed_frequency": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "cron": {
+                "type": "string"
+              },
+              "destination_tables": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "destination_id": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "schedule_configurable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "last_run_ts": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "last_run_status": {
+        "type": "string"
+      },
+      "last_run_time": {
+        "type": "integer",
+        "format": "int64"
+      },
+      "last_run_failure_message": {
+        "type": "string"
+      }
+    }
+  }
+}

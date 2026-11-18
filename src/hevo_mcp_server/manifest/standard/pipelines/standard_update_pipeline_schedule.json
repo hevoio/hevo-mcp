@@ -1,0 +1,41 @@
+{
+  "name": "standard_update_pipeline_schedule",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/schedule",
+  "summary": "Update Pipeline Schedule",
+  "description": "",
+  "destructive": false,
+  "consequence": "Changes how often this Pipeline runs.",
+  "title": "Change schedule of Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatepipelineschedule",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "frequency": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

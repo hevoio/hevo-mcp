@@ -1,0 +1,146 @@
+{
+  "name": "list_destinations",
+  "product": "edge",
+  "resource": "destinations",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/destinations",
+  "summary": "List All Destinations",
+  "description": "Retrieves details of all Destinations in your team, including their identifier, name, connector, status, and configuration settings. Credentials in the configuration settings are masked. The Destinations are ordered by `id`. A Destination that you have deleted, or that is being deleted, is not listed. The response lists only the Destinations in the region of the base URL that you call.",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-destinations",
+  "parameters": [
+    {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "Value used to retrieve the next set of results. Provide the `next_cursor` value returned in the previous API response.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Maximum number of results the API should return. If not set, the API returns up to 100 items.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 500,
+        "minimum": 1,
+        "type": "integer"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "type": "string"
+      },
+      "data": {
+        "description": "List of Destinations.",
+        "items": {
+          "properties": {
+            "id": {
+              "description": "Unique identifier of the Destination.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "name": {
+              "description": "Name of the Destination in Hevo.",
+              "type": "string"
+            },
+            "connector_id": {
+              "description": "Identifier of the connector that loads data into this Destination. This is the `connector_id` value that the Destination was created with. For example, _snowflake_.",
+              "type": "string"
+            },
+            "type": {
+              "description": "Type of the Destination. This is the `type` value that the Destination was created with. For example, _SNOWFLAKE_.",
+              "type": "string"
+            },
+            "status": {
+              "description": "Current status of the Destination.",
+              "enum": [
+                "CREATED",
+                "FAILED"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "CREATED": "The Destination is ready to receive data.",
+                "FAILED": "Hevo created the Destination but could not complete its setup. You cannot use a Destination in this status in a Pipeline. Delete it and create it again."
+              }
+            },
+            "config": {
+              "description": "Configuration settings of the Destination, with credentials masked. The settings returned depend on the connector. Refer to [Read the Connector Configuration](/reference/creating-destinations-with-hevo-api#step-1-read-the-connector-configuration) for more information about the settings that each connector accepts.",
+              "type": "object",
+              "additionalProperties": false
+            },
+            "created_at": {
+              "description": "Timestamp when the Destination was created, in <a href=\"https://en.wikipedia.org/wiki/Unix_time\" target=\"_blank\" rel=\"noopener noreferrer\">Unix epoch time</a> (in milliseconds).",
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "created_by": {
+              "description": "Email address of the user who created the Destination.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "updated_at": {
+              "description": "Timestamp when the Destination was last updated, in Unix epoch time (in milliseconds).",
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "updated_by": {
+              "description": "Email address of the user who last updated the Destination.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "connector_id",
+            "type",
+            "config"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "next_cursor": {
+        "description": "Value you can use to fetch the next set of results. Specify this value in the `cursor` query parameter to fetch additional results. This is `null` when no more results are available.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "has_more": {
+        "description": "Indicates whether more results are available.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "data",
+      "has_more"
+    ],
+    "type": "object"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "standard_update_model_schedule",
+  "product": "standard",
+  "resource": "models",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/models/{id}/schedule",
+  "summary": "Update Model Schedule",
+  "description": "",
+  "destructive": false,
+  "consequence": "Changes how often this Model runs.",
+  "title": "Change schedule of Model",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/schedulemodel",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "REAL_TIME",
+            "FREQUENCY",
+            "CRON",
+            "LOAD"
+          ]
+        },
+        "frequency": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cron_expression": {
+          "type": "string"
+        },
+        "destination_tables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

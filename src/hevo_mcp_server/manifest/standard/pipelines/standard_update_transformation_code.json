@@ -1,0 +1,43 @@
+{
+  "name": "standard_update_transformation_code",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/transformations",
+  "summary": "Update transformation code",
+  "description": "",
+  "destructive": false,
+  "consequence": "Changes how Hevo transforms every future Event.",
+  "title": "Update transformation code of Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatetransformationcode",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "required": [
+        "script"
+      ],
+      "type": "object",
+      "properties": {
+        "script": {
+          "type": "string"
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

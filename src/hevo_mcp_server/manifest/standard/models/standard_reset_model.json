@@ -1,0 +1,30 @@
+{
+  "name": "standard_reset_model",
+  "product": "standard",
+  "resource": "models",
+  "action": "write",
+  "method": "DELETE",
+  "path": "/api/public/v2.0/models/{id}/reset",
+  "summary": "Reset model",
+  "description": "",
+  "destructive": true,
+  "consequence": "Deletes the output of this Model and builds it again.",
+  "title": "Reset Model",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/resetmodel",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

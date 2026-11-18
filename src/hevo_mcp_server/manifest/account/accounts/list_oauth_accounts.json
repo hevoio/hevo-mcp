@@ -1,0 +1,61 @@
+{
+  "name": "list_oauth_accounts",
+  "product": "account",
+  "resource": "accounts",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/public/v2.0/accounts/oauth",
+  "summary": "Get OAuth Accounts",
+  "description": "",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/getalloauthaccounts",
+  "parameters": [
+    {
+      "name": "provider",
+      "in": "query",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "OAUTH_ACCOUNT",
+            "SERVICE_ACCOUNT"
+          ]
+        },
+        "created_at": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "authenticated_user": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

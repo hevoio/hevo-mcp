@@ -1,0 +1,47 @@
+# Hevo MCP server settings: every timeout, limit and control in one place.
+#
+# Precedence: built-in defaults < this file < the few HEVO_MCP_* variables named below. Point the server at a
+# file with HEVO_MCP_CONFIG=/path/hevo_mcp.toml or --config. Unknown sections or keys stop
+# the server at startup. Every value in force is logged in the `server_start` record.
+#
+# The values below are the defaults (a test keeps them in step with settings.py). Public URL, host and
+# port are per-deployment identity and stay environment variables; the region comes with every call.
+
+[timeouts]
+connect_seconds = 15           # establishing a connection to Hevo
+read_seconds = 60              # one Hevo read request
+write_seconds = 420            # one Hevo write (Edge pipeline create tests both connections)
+read_deadline_seconds = 90     # a whole read tool call, retries and fetch_all pages included
+
+[progress]
+interval_seconds = 10          # progress notification while waiting on Hevo; 0 = off
+
+[limits]
+max_rows = 5000                # fetch_all stops here and returns truncated + next_cursor
+max_pages = 200
+max_result_bytes = 1000000     # larger results become RESULT_TOO_LARGE
+
+[rate_limits]                  # HTTP only, per caller (hashed API key), per replica; 0 disables. A stdio server has one caller and no limit
+reads_per_minute = 60
+writes_per_minute = 20
+unverified_per_minute = 60     # shared by all keys Hevo hasn't accepted yet (stops fake-key floods)
+
+[access]
+default_scope = "read"         # HEVO_MCP_DEFAULT_SCOPE: scope when a caller sends no X-Hevo-Scope, and for stdio (read | write | delete)
+disabled_endpoints = []        # endpoint or tool-group names to hide and refuse
+allowed_regions = []           # HEVO_MCP_ALLOWED_REGIONS: Hevo regions this deployment serves, e.g. ["eu"]; others are refused. Empty = any
+# To take data-losing endpoints out of reach on a shared server, for example:
+# disabled_endpoints = ["resync_pipeline", "delete_pipeline"]
+
+[http]
+max_body_bytes = 1000000       # HEVO_MCP_MAX_BODY_BYTES: request bodies above this get 413
+allowed_hosts = []             # HEVO_MCP_ALLOWED_HOSTS: Host header allowlist, e.g. ["mcp.example.com"] (421 otherwise)
+allowed_origins = []           # HEVO_MCP_ALLOWED_ORIGINS: browser origins allowed to call (403 otherwise)
+shutdown_grace_seconds = 450   # HEVO_MCP_SHUTDOWN_GRACE: wait for in-flight calls on SIGTERM; keep above write_seconds
+
+[hevo_pool]                    # outbound connections to Hevo, per replica
+max_connections = 100
+max_keepalive_connections = 20
+[updates]                      # hevo_whoami says when a newer release exists (one anonymous request, at most daily)
+enabled = true                 # false/off turns it off
+url = "https://pypi.org/pypi/hevo-mcp/json"  # the package's release list on PyPI

@@ -1,0 +1,44 @@
+{
+  "name": "standard_update_pipeline_position",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/position",
+  "summary": "Update log-based Pipeline's position.",
+  "description": "",
+  "destructive": true,
+  "consequence": "Moving the log position can skip data or load it again.",
+  "title": "Change position of Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatelogbasedpipelineposition",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

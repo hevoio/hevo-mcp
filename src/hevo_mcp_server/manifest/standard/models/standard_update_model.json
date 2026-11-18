@@ -1,0 +1,67 @@
+{
+  "name": "standard_update_model",
+  "product": "standard",
+  "resource": "models",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/models/{id}",
+  "summary": "Update Model",
+  "description": "",
+  "destructive": false,
+  "consequence": "Changes the query or the settings of this Model.",
+  "title": "Update Model",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatemodel",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "source_query": {
+          "type": "string"
+        },
+        "destination_table_details": {
+          "required": [
+            "table_name"
+          ],
+          "type": "object",
+          "properties": {
+            "table_name": {
+              "type": "string"
+            },
+            "primary_keys": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "load_type": {
+              "type": "string",
+              "enum": [
+                "TRUNCATE_AND_LOAD",
+                "INCREMENTAL_LOAD"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

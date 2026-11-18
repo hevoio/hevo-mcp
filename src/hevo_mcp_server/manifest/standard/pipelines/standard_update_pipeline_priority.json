@@ -1,0 +1,44 @@
+{
+  "name": "standard_update_pipeline_priority",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/priority",
+  "summary": "Update Pipeline priority",
+  "description": "",
+  "destructive": false,
+  "consequence": "Changes the priority of this Pipeline over your other Pipelines.",
+  "title": "Change priority of Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatepipelinepriority",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": [
+            "HIGH",
+            "NORMAL"
+          ]
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

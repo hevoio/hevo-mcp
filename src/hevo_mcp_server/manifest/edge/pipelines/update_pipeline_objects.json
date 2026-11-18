@@ -1,0 +1,615 @@
+{
+  "name": "update_pipeline_objects",
+  "product": "edge",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PATCH",
+  "path": "/api/v2/pipelines/{pipeline_id}/objects",
+  "summary": "Manage Objects in a Pipeline (PATCH)",
+  "description": "Allows you to control which Source objects are replicated in the specified `pipeline_id`. You can select all objects, exclude all objects, or retain the existing selection. You can also configure the load mode and the fields for the selected objects.\n\nIn the request body, list only the objects that you want to change. Hevo keeps the current settings of every object that you do not list, so you do not need to send the full list each time.\n\n**Note:** If you cannot send a `PATCH` request, send the same request body to the [Manage Objects in a Pipeline (POST)](/reference/post_api-v2-pipelines-pipeline-id-objects) endpoint.\n\nThe following rules apply to the objects that you name in the request:\n\n- The rule for a child object depends on the group it belongs to. A child object that Hevo replicates along with its parent cannot be selected on its own, and takes the selection of its parent. You can still name such a child to change its load mode or its fields, as long as the request gives it the same selection as its parent object.\n- A child object that needs its parent can be selected only while the parent stays selected after the request. Select the parent object in the same request.\n- The effect on the child objects depends on the `child_selection_mode` of the parent. If it is `AUTO_FOLLOW_HEAD`, selecting or clearing the parent applies the same selection to the child objects, unless you name them yourself. If it is `REQUIRE_HEAD_SELECTED`, clearing the parent clears the child objects, and selecting the parent leaves them unselected.\n- If the [List All Pipeline Objects](/reference/get_api-v2-pipelines-pipeline-id-objects) endpoint does not return the `selectable` field for an object, you may not be able to name its child objects in the request. In that case, change the parent object instead, and the child objects take its selection. Such an object may also not be able to use the `MERGE` load mode if it has no primary key. Hevo applies this check only once it knows the fields of the object.\n- An object that Hevo marks as not selectable cannot be selected. If the status of an object does not allow a change, remove that object from the request.\n- Unless the Pipeline is disabled, the request must keep at least one object of the Pipeline selected for replication. A disabled Pipeline may be left with nothing selected.\n\nRefer to [Managing Objects in Pipelines](/reference/managing-objects-in-pipelines) for more information about load modes, fields, and object groups.\n",
+  "destructive": false,
+  "consequence": "Hevo stops ingesting the data of excluded objects.",
+  "title": "Include, exclude, or update objects of Edge Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/patch_api-v2-pipelines-pipeline-id-objects",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Pipeline.",
+      "in": "path",
+      "name": "pipeline_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "properties": {
+        "selection_mode": {
+          "default": "RETAIN_EXISTING",
+          "description": "Determines the objects selected for replication in the Pipeline. This field is optional and defaults to `RETAIN_EXISTING`. Its value is not case-sensitive.\n\nAny other value returns a `400`.\n",
+          "enum": [
+            "INCLUDE_ALL",
+            "EXCLUDE_ALL",
+            "RETAIN_EXISTING"
+          ],
+          "type": "string",
+          "x-enumDescriptions": {
+            "INCLUDE_ALL": "Selects all Source objects for replication except the ones you exclude.",
+            "EXCLUDE_ALL": "Excludes all Source objects except the ones you include.",
+            "RETAIN_EXISTING": "Keeps the current selection without changing which objects are replicated."
+          }
+        },
+        "objects": {
+          "description": "List of the objects that you want to change. List each object only once. This field is required when `selection_mode` is `RETAIN_EXISTING`, and it must then hold at least one object. With `INCLUDE_ALL` or `EXCLUDE_ALL`, you can leave this list out or send it empty.",
+          "items": {
+            "properties": {
+              "name": {
+                "description": "Fully qualified name of the object that you want to configure, as the List All Pipeline Objects endpoint returns it in `fully_qualified_name`. For example, `public.orders`. An entry without a name returns a `400`.",
+                "type": "string"
+              },
+              "selected": {
+                "description": "Specifies whether you want the Pipeline to replicate this object. Set it to _true_ to start replicating the object, or _false_ to stop replicating it.",
+                "type": "boolean"
+              },
+              "load_mode": {
+                "description": "Mode in which you want to load data from the Source object into the Destination table. If you do not send this value, the object continues to use its current load mode. The value is case-sensitive. Hevo ignores it when `selected` is `false`, and `OVERWRITE` is never accepted here. The object must allow the mode you send, and some objects do not allow the mode to be changed at all. A value that the object does not allow returns a `400`.",
+                "enum": [
+                  "MERGE",
+                  "APPEND",
+                  "HISTORY_TRACKING"
+                ],
+                "type": "string",
+                "x-enumDescriptions": {
+                  "MERGE": "Existing records are updated based on matching criteria, such as primary keys, and new records are added to your Destination table if no match is found.",
+                  "APPEND": "New records are added at the end of your Destination table without modifying or deleting any existing data.",
+                  "HISTORY_TRACKING": "Every version of a record is retained in your Destination table as the record changes in the Source. Each change is added as a new row, alongside timestamps that define the period during which that version was valid."
+                }
+              },
+              "include_fields": {
+                "description": "List of fields that you want to include for replication. This list changes the current field selection. A field that you do not name keeps the state it has.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "exclude_fields": {
+                "description": "List of fields that you want to exclude from replication. This list changes the current field selection. A field that you do not name keeps the state it has.\n\nThe following rules apply to both field lists. Hevo rejects a request that breaks any of them, and nothing is saved.\n\n- You cannot send these lists when `selected` is `false`.\n- A field cannot appear in both lists, or twice in the same list, and a name cannot be blank.\n- Hevo removes leading and trailing spaces and then matches the name exactly, so the name is case-sensitive. A name that is not a field of the object is rejected, and the message lists the names you can use.\n- You cannot exclude a field that Hevo marks as a key of the object. With the `MERGE` load mode, the primary key cannot be excluded.\n- Unless the Pipeline is disabled, at least one field of the object must stay selected.\n",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "name",
+              "selected"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "required": true
+  },
+  "response": {
+    "type": "object",
+    "required": [
+      "code",
+      "data"
+    ],
+    "properties": {
+      "code": {
+        "type": "string",
+        "description": "Status of the API call. Returns `Accepted` when the request is accepted.",
+        "enum": [
+          "Accepted"
+        ]
+      },
+      "message": {
+        "type": "string",
+        "description": "Description of the action that Hevo performed."
+      },
+      "data": {
+        "type": "object",
+        "description": "Details of the Pipeline.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier of the Pipeline."
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the Pipeline."
+          },
+          "state": {
+            "type": "string",
+            "description": "Current lifecycle state of the Pipeline.\n\nThis endpoint never returns `Deleting` or `Deleted`.\n",
+            "enum": [
+              "Created",
+              "Created Source",
+              "Created Destination",
+              "Configured Pipeline",
+              "Configured Object",
+              "Initializing",
+              "Initialized",
+              "Disabling",
+              "Disabled",
+              "Enabling",
+              "Restarting",
+              "Failed"
+            ],
+            "x-enumDescriptions": {
+              "Created": "Pipeline has been created, but the full configuration is still in progress.",
+              "Created Source": "Source has been configured for the Pipeline.",
+              "Created Destination": "Destination has been configured for the Pipeline.",
+              "Configured Pipeline": "Pipeline settings have been configured.",
+              "Configured Object": "Objects have been configured for replication.",
+              "Initializing": "Pipeline is starting and preparing to replicate data.",
+              "Initialized": "Pipeline has been fully set up and is replicating data.",
+              "Disabling": "Pipeline is being disabled.",
+              "Disabled": "Pipeline has been disabled and is no longer replicating data.",
+              "Enabling": "Pipeline is being enabled.",
+              "Restarting": "Pipeline is restarting after a resync.",
+              "Failed": "Pipeline could not be set up or could not continue replicating data."
+            }
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "Indicates whether the Pipeline is disabled. This value is _true_ while the Pipeline is in the _Disabled_ or _Disabling_ state. This value is `false` while the Pipeline is in the _Enabling_ state."
+          },
+          "health": {
+            "type": "object",
+            "description": "Condition of the Pipeline's runs, as the <a href=\"https://docs.hevodata.com/edge/pipelines/pipeline-overview/#understanding-pipeline-health\" target=\"_blank\" rel=\"noopener noreferrer\">Pipeline Overview</a> in the Hevo UI shows it. Hevo returns this object for a single Pipeline only, in the response of a read or an action, and omits it from a list of Pipelines and when it cannot access job monitoring.",
+            "properties": {
+              "value": {
+                "type": "string",
+                "enum": [
+                  "HEALTHY",
+                  "NEEDS_ATTENTION",
+                  "DEFERRED",
+                  "RUN_IN_PROGRESS",
+                  "HISTORICAL_RUN_IN_PROGRESS"
+                ],
+                "x-enumDescriptions": {
+                  "HEALTHY": "The last run completed and nothing needs attention.",
+                  "NEEDS_ATTENTION": "The last run failed and the Pipeline needs attention.",
+                  "DEFERRED": "A run is holding until it can proceed.",
+                  "RUN_IN_PROGRESS": "A run is in progress.",
+                  "HISTORICAL_RUN_IN_PROGRESS": "A historical load is in progress."
+                },
+                "description": "Current condition of the Pipeline."
+              },
+              "display_name": {
+                "type": "string",
+                "description": "The label the Hevo UI shows for this condition. For example, _Healthy_."
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "success",
+                  "info",
+                  "warning",
+                  "error"
+                ],
+                "description": "Severity level that the Hevo UI uses to show this condition. For example, _success_."
+              }
+            }
+          },
+          "source": {
+            "type": "object",
+            "description": "Source details configured in the Pipeline.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name specified for the Source in Hevo."
+              },
+              "connector_id": {
+                "type": "string",
+                "description": "Identifier of the connector that ingests data from this Source. This is the `connector_id` value that the Pipeline was created with. For example, _SOURCE_CONNECTOR_POSTGRES_."
+              },
+              "type": {
+                "type": "string",
+                "description": "Variant of the Source."
+              }
+            }
+          },
+          "destination_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier of the Destination the Pipeline loads into."
+          },
+          "destination": {
+            "type": "object",
+            "description": "Destination details configured in the Pipeline.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name specified for the Destination in Hevo."
+              },
+              "connector_id": {
+                "type": "string",
+                "description": "Identifier of the connector used to load data into this Destination."
+              },
+              "type": {
+                "type": "string",
+                "description": "Type of the Destination."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "CREATED",
+                  "FAILED"
+                ],
+                "description": "Current status of the Destination.\n\nThis endpoint never returns `DELETING`, `DELETED` or `DELETE_FAILED`.\n",
+                "x-enumDescriptions": {
+                  "CREATED": "The Destination is ready to receive data.",
+                  "FAILED": "Hevo created the Destination but could not complete its setup."
+                }
+              }
+            }
+          },
+          "destination_prefix": {
+            "type": "string",
+            "description": "Prefix used for Destination table names."
+          },
+          "load_mode": {
+            "type": "string",
+            "description": "Mode used to load data from the Source objects into the Destination tables.",
+            "enum": [
+              "APPEND",
+              "MERGE",
+              "OVERWRITE"
+            ],
+            "x-enumDescriptions": {
+              "APPEND": "New records are added at the end of your Destination table without modifying or deleting any existing data.",
+              "MERGE": "Existing records are updated based on matching criteria, such as primary keys, and new records are added to your Destination table if no match is found.",
+              "OVERWRITE": "Each load replaces all the records in your Destination table. You cannot set it while creating or modifying a Pipeline, and a Pipeline that uses it can be switched to another load mode."
+            }
+          },
+          "schema_evolution": {
+            "type": "string",
+            "enum": [
+              "ALLOW_ALL",
+              "BLOCK_ALL",
+              "ALLOW_COLUMN_LEVEL"
+            ],
+            "description": "Policy for applying Source schema changes to the Destination schema.",
+            "x-enumDescriptions": {
+              "ALLOW_ALL": "Hevo replicates all Source schema changes, such as new or updated columns and tables, to the Destination.",
+              "BLOCK_ALL": "Hevo does not replicate any Source schema changes to the Destination.",
+              "ALLOW_COLUMN_LEVEL": "Hevo replicates only new columns from the Source to the Destination. New schemas and tables are not synced."
+            }
+          },
+          "replication_type": {
+            "type": "string",
+            "description": "Type of data Hevo replicates from your Source objects.",
+            "enum": [
+              "HISTORICAL_AND_INCREMENTAL",
+              "INCREMENTAL_ONLY"
+            ],
+            "x-enumDescriptions": {
+              "HISTORICAL_AND_INCREMENTAL": "Hevo first replicates all existing data from the selected Source objects and then captures only data changes.",
+              "INCREMENTAL_ONLY": "Hevo replicates only new and changed data from your Source object after the Pipeline is created."
+            }
+          },
+          "schedule": {
+            "type": "object",
+            "properties": {
+              "sync_type": {
+                "type": "string",
+                "enum": [
+                  "SCHEDULED",
+                  "ON_DEMAND"
+                ],
+                "description": "Determines how Pipeline runs are triggered.",
+                "x-enumDescriptions": {
+                  "SCHEDULED": "Pipeline runs automatically at the interval set in frequency_minutes.",
+                  "ON_DEMAND": "Pipeline runs only when you trigger it. Hevo does not run it automatically."
+                }
+              },
+              "frequency_minutes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int64",
+                "description": "Interval between Pipeline runs (in minutes). This field is always present. Its value is `null` when the Pipeline has no fixed interval. Ignore this value when `sync_type` is `ON_DEMAND`."
+              }
+            },
+            "description": "Interval at which the Pipeline runs jobs to process data."
+          },
+          "latency_alert": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Indicates whether alerts are enabled for Pipeline latency."
+              },
+              "threshold_minutes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Delay after which Hevo sends you a latency alert (in minutes). Hevo measures this delay from the time your data is ready in the Source to the time it is loaded into your Destination. This field is always present. Its value is `null` when `enabled` is `false`, and also when the alert is on but no threshold is stored."
+              }
+            },
+            "description": "Configuration for triggering alerts when data loading is delayed."
+          },
+          "failure_handling_policy": {
+            "type": "object",
+            "properties": {
+              "object_failure_level": {
+                "type": "string",
+                "enum": [
+                  "PARTIAL",
+                  "ALL_OR_NONE"
+                ],
+                "description": "Handling of data replication if an object fails.",
+                "x-enumDescriptions": {
+                  "PARTIAL": "If an object fails, the Pipeline continues replicating data for the remaining objects.",
+                  "ALL_OR_NONE": "Hevo loads the data of an object only when all of its Events are processed successfully in a job."
+                }
+              },
+              "object_failure_threshold": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int64",
+                "description": "Number of failed Events allowed for an object in a job. Hevo stops loading the data of that object once its failed Events exceed this number. This value applies only when `object_failure_level` is `PARTIAL`. The field is always present, and its value can be `null` for a Pipeline that does not store one, such as one set to `ALL_OR_NONE`."
+              }
+            },
+            "description": "Defines how failures are handled for Source objects."
+          },
+          "source_schema_status": {
+            "type": "object",
+            "description": "Details of the Source schema for this Pipeline.",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Current status of the Source schema.",
+                "enum": [
+                  "REQUESTED",
+                  "COMPLETED",
+                  "FAILED"
+                ],
+                "x-enumDescriptions": {
+                  "REQUESTED": "Hevo is reading the schema of your Source.",
+                  "COMPLETED": "Hevo has read the schema of your Source, and the object list is ready.",
+                  "FAILED": "Hevo could not read the schema of your Source."
+                }
+              },
+              "refreshed_at": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Timestamp when the Source schema was last refreshed, in <a href=\"https://en.wikipedia.org/wiki/Unix_time\" target=\"_blank\" rel=\"noopener noreferrer\">Unix epoch time</a> (in milliseconds). This value is `null` until Hevo refreshes the schema for the first time."
+              }
+            }
+          },
+          "runs": {
+            "type": "object",
+            "description": "Details of the last Pipeline run, the next scheduled run, and any run currently in progress. When this object is returned, all four of its keys (`last_completed`, `active`, `next_run` and `last_seven_days`) are present, and a key with no value is `null`. Hevo leaves out `runs` and `health` together when it cannot read the job overview, and leaves out `source_schema_status` when it cannot read the Source schema.",
+            "required": [
+              "last_completed",
+              "active",
+              "next_run",
+              "last_seven_days"
+            ],
+            "properties": {
+              "last_completed": {
+                "description": "The most recently completed run.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "job_id": {
+                    "description": "Unique identifier of the job. Hevo returns this field in the `runs.last_completed` object and in each object of the `runs.active` array.",
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "type": {
+                    "description": "Type of job, such as a historical load, an incremental run or a data refresher run.",
+                    "enum": [
+                      "INCREMENTAL",
+                      "HISTORICAL",
+                      "RESYNC",
+                      "RESYNC_WITH_DROP_AND_LOAD",
+                      "REFRESHER"
+                    ],
+                    "type": "string"
+                  },
+                  "status": {
+                    "description": "Current status of the job. The values are the same as the ones the job endpoints return, including `CANCELED` and `CANCELING`.",
+                    "enum": [
+                      "IN_PROGRESS",
+                      "COMPLETED",
+                      "COMPLETED_WITH_FAILURES",
+                      "DEFERRED",
+                      "DEFERRED_WITH_FAILURES",
+                      "FAILED",
+                      "CANCELING",
+                      "CANCELED",
+                      "SKIPPED"
+                    ],
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "description": "Timestamp when the job was created, in Unix epoch time (in milliseconds).",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                }
+              },
+              "active": {
+                "type": "array",
+                "description": "Jobs that are running for the Pipeline right now. This list is empty when no job is running.",
+                "items": {
+                  "properties": {
+                    "job_id": {
+                      "description": "Unique identifier of the job. Hevo returns this field in the `runs.last_completed` object and in each object of the `runs.active` array.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "Type of job, such as a historical load, an incremental run or a data refresher run.",
+                      "enum": [
+                        "INCREMENTAL",
+                        "HISTORICAL",
+                        "RESYNC",
+                        "RESYNC_WITH_DROP_AND_LOAD",
+                        "REFRESHER"
+                      ],
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "Current status of the job. The values are the same as the ones the job endpoints return, including `CANCELED` and `CANCELING`.",
+                      "enum": [
+                        "IN_PROGRESS",
+                        "COMPLETED",
+                        "COMPLETED_WITH_FAILURES",
+                        "DEFERRED",
+                        "DEFERRED_WITH_FAILURES",
+                        "FAILED",
+                        "CANCELING",
+                        "CANCELED",
+                        "SKIPPED"
+                      ],
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "description": "Timestamp when the job was created, in Unix epoch time (in milliseconds).",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "next_run": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Time at which Hevo expects the Pipeline to run next. This value is `null` when Hevo cannot determine the next run.",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "AT_TIME",
+                      "ON_SCHEDULE"
+                    ],
+                    "description": "Condition on which the time of the next run is set. This value is `AT_TIME` when Hevo has estimated the start time of the next run and returns it in the `at` field, and `ON_SCHEDULE` when the Pipeline runs on a custom schedule, for which `at` is `null`."
+                  },
+                  "at": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "format": "int64",
+                    "description": "Timestamp of the next run, in Unix epoch time (in milliseconds), or `null`."
+                  }
+                }
+              },
+              "last_seven_days": {
+                "type": "object",
+                "description": "Events that the Pipeline processed in the last seven days, split into `historical`, `incremental` and `refresher`.",
+                "properties": {
+                  "historical": {
+                    "type": "object",
+                    "properties": {
+                      "ingested": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events read from the Source. This count can be lower than the number of loaded Events."
+                      },
+                      "loaded": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events loaded into the Destination."
+                      },
+                      "failed": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events that could not be processed."
+                      }
+                    }
+                  },
+                  "incremental": {
+                    "type": "object",
+                    "properties": {
+                      "ingested": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events read from the Source. This count can be lower than the number of loaded Events."
+                      },
+                      "loaded": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events loaded into the Destination."
+                      },
+                      "failed": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events that could not be processed."
+                      }
+                    }
+                  },
+                  "refresher": {
+                    "type": "object",
+                    "properties": {
+                      "ingested": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events read from the Source. This count can be lower than the number of loaded Events."
+                      },
+                      "loaded": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events loaded into the Destination."
+                      },
+                      "failed": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of Events that could not be processed."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "created_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp when the Pipeline was created, in Unix epoch time (in milliseconds)."
+          },
+          "created_by": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user who created the Pipeline."
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp when the Pipeline was last updated, in Unix epoch time (in milliseconds)."
+          },
+          "updated_by": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user who last updated the Pipeline."
+          }
+        }
+      }
+    }
+  }
+}

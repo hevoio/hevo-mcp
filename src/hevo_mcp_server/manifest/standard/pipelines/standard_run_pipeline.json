@@ -1,0 +1,30 @@
+{
+  "name": "standard_run_pipeline",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/pipelines/{id}/run-now",
+  "summary": "Run Pipeline",
+  "description": "",
+  "destructive": false,
+  "consequence": "Starts a Pipeline run. The data that it reads from the Source counts toward your Events quota.",
+  "title": "Run Standard Pipeline {} now",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/schedulepipelinetorun",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

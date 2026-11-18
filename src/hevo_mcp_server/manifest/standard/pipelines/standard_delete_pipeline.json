@@ -1,0 +1,38 @@
+{
+  "name": "standard_delete_pipeline",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "delete",
+  "method": "DELETE",
+  "path": "/api/public/v2.0/pipelines/{id}",
+  "summary": "Delete Pipeline",
+  "description": "Pass query.dropResource explicitly. Set it to true to delete the tables in the Destination as well, or to false to keep them. Ask the user which they want.",
+  "destructive": true,
+  "consequence": "Deletes this Pipeline. If the request asks to delete the tables in the Destination, they are deleted too. This action cannot be undone.",
+  "title": "Delete Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/deletepipeline",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "dropResource",
+      "in": "query",
+      "schema": {
+        "type": "boolean",
+        "default": true
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

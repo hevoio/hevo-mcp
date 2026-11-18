@@ -1,0 +1,186 @@
+{
+  "name": "cancel_pipeline_job",
+  "product": "edge",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/v2/pipelines/{pipeline_id}/jobs/{job_id}/actions/cancel",
+  "summary": "Cancel a Pipeline Job",
+  "description": "Cancels the running job for the specified `job_id`. Hevo stops the tasks running in that job. Canceling a historical load or a resync job also cancels the incremental jobs running alongside it. Hevo does not cancel the jobs that are queued behind this one. The Pipeline keeps its schedule, so the next job runs at the configured sync frequency.\n\nHevo does not cancel the job immediately. The response returns the details of the job at the time Hevo accepted the request. To check whether the job has been canceled, call the [Get Details of a Pipeline Job](/reference/get_api-v2-pipelines-pipeline-id-jobs-job-id) endpoint and read its `status` value.\n\nRefer to [Canceling a Job](/reference/viewing-pipeline-job-history#canceling-a-job) for more information about canceling a job.\n",
+  "destructive": true,
+  "consequence": "Stops the tasks of this job that are running.",
+  "title": "Cancel job of Edge Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/post_api-v2-pipelines-pipeline-id-jobs-job-id-actions-cancel",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Pipeline.",
+      "in": "path",
+      "name": "pipeline_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "description": "Unique identifier of the job.",
+      "in": "path",
+      "name": "job_id",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "type": "object",
+    "required": [
+      "code",
+      "data"
+    ],
+    "properties": {
+      "code": {
+        "type": "string",
+        "enum": [
+          "Success",
+          "Accepted"
+        ],
+        "description": "Status of the API call. Returns `Accepted` when the cancel request is accepted."
+      },
+      "message": {
+        "type": "string",
+        "description": "Description of the action that Hevo performed."
+      },
+      "data": {
+        "type": "object",
+        "description": "Details of the job at the time Hevo accepted the request.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the job."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the job.",
+            "enum": [
+              "HISTORICAL",
+              "INCREMENTAL",
+              "REFRESHER",
+              "RESYNC",
+              "RESYNC_WITH_DROP_AND_LOAD"
+            ],
+            "x-enumDescriptions": {
+              "HISTORICAL": "Ingests the existing data from the Source.",
+              "INCREMENTAL": "Processes only new or updated records since the last job run.",
+              "REFRESHER": "Re-reads recent data from your Source to pick up records that arrived late, or that changed after Hevo first replicated them.",
+              "RESYNC": "Re-ingests the data of the Pipeline's objects, or only of the objects you named in an object resync, without dropping the Destination tables.",
+              "RESYNC_WITH_DROP_AND_LOAD": "Re-ingests the data of the Pipeline's objects, or only of the objects you named in an object resync, with the Drop and Load action. Hevo drops and recreates each Destination table with the new schema, and then reloads the data ingested from the Source object."
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the job.",
+            "enum": [
+              "IN_PROGRESS",
+              "COMPLETED",
+              "COMPLETED_WITH_FAILURES",
+              "DEFERRED",
+              "DEFERRED_WITH_FAILURES",
+              "FAILED",
+              "CANCELING",
+              "CANCELED",
+              "SKIPPED"
+            ],
+            "x-enumDescriptions": {
+              "IN_PROGRESS": "Job is currently running.",
+              "COMPLETED": "The job finished successfully and all records were processed.",
+              "COMPLETED_WITH_FAILURES": "Job finished execution but some records or objects failed to process.",
+              "DEFERRED": "Job finished, but the rate limit of the Source interrupted the ingestion of one or more objects. Hevo loaded the data that it ingested for those objects to the Destination.",
+              "DEFERRED_WITH_FAILURES": "Job finished, but the rate limit of the Source interrupted the ingestion of one or more objects, and one or more objects have failed Events.",
+              "FAILED": "Job failed due to an error.",
+              "CANCELING": "Job cancellation is currently in progress.",
+              "CANCELED": "Job was canceled and did not complete.",
+              "SKIPPED": "Job was skipped."
+            }
+          },
+          "created_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp when the job started, in <a href=\"https://en.wikipedia.org/wiki/Unix_time\" target=\"_blank\" rel=\"noopener noreferrer\">Unix epoch time</a> (in milliseconds)."
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp when the job last changed, in Unix epoch time (in milliseconds)."
+          },
+          "events_ingested": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of Events ingested from the objects processed in the job."
+          },
+          "events_loaded": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of Events loaded to the Destination for the objects processed in the job."
+          },
+          "events_failed": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of Events that were not loaded to the Destination."
+          },
+          "objects_success": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of objects processed successfully."
+          },
+          "objects_queued": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of objects waiting to be processed."
+          },
+          "objects_skipped": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of objects skipped during processing."
+          },
+          "objects_failed": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of objects that failed processing."
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Time taken to execute the job (in milliseconds). For a job that is still running, this value is the time elapsed since the job started, and it increases with each request."
+          },
+          "latency": {
+            "type": "object",
+            "description": "Time taken for Events to be loaded into the Destination (in milliseconds). Its `min`, `max` and `mean` values are 0 when Hevo has not measured the latency of the job, as for a historical load or a resync.",
+            "properties": {
+              "min": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Minimum object-level latency (in milliseconds)."
+              },
+              "max": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Maximum object-level latency (in milliseconds)."
+              },
+              "mean": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Average latency across the Source objects processed in the job (in milliseconds)."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

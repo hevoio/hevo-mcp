@@ -1,0 +1,30 @@
+{
+  "name": "delete_oauth_account",
+  "product": "account",
+  "resource": "accounts",
+  "action": "delete",
+  "method": "DELETE",
+  "path": "/api/public/v2.0/accounts/oauth/{id}",
+  "summary": "Remove OAuth Account",
+  "description": "",
+  "destructive": true,
+  "consequence": "Every Pipeline that uses this OAuth account can no longer connect to its Source until you authorize another account.",
+  "title": "Delete OAuth account",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/deleteoauthaccount",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

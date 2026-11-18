@@ -1,0 +1,75 @@
+{
+  "name": "standard_update_schema_mapping",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/pipelines/{id}/mappings/{event_type}",
+  "summary": "Update Schema Mapping of an Event type",
+  "description": "",
+  "destructive": false,
+  "consequence": "Changes how Hevo loads every future Event of this Event Type.",
+  "title": "Update schema mapping of Event Type",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updateschemamapping",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "event_type",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "destination_table": {
+          "type": "string"
+        },
+        "field_mappings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_field": {
+                "type": "string"
+              },
+              "destination_field": {
+                "type": "string"
+              },
+              "ignored": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "required": true
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "success": {
+        "type": "boolean"
+      },
+      "message": {
+        "type": "string"
+      }
+    }
+  }
+}

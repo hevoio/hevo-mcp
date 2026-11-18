@@ -1,0 +1,66 @@
+{
+  "name": "get_source_connector",
+  "product": "edge",
+  "resource": "metadata",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/metadata/sources/connectors/{connector_id}",
+  "summary": "Get Configuration Details of a Source Connector",
+  "description": "Retrieves the configuration settings that a Source connector accepts, including their data type, whether they are required, their default value, and the values they allow.\n\nHevo returns these settings as a <a href=\"https://json-schema.org/draft/2020-12\" target=\"_blank\" rel=\"noopener noreferrer\">JSON schema draft 2020-12</a> definition, in which the settings specific to the connector are grouped under `config`. Use this schema to build the Source details that you send while [creating a Pipeline](/reference/post_api-v2-pipelines), or to validate them before you send the request.\n\nThe schema states the following:\n\n- A key listed under `required` must always be sent. A key that Hevo fills with a default value when it is not sent is not required.\n- A key that applies only under a condition, such as the credentials of a specific authentication method, is defined in an `if`/`then` block inside `allOf`, and is required only when that condition is met.\n- A credential is a string marked `writeOnly: true` and `format: password`. Hevo never returns credentials in any response.\n- A key that accepts a fixed set of values is defined as a `oneOf` list of `const` values, each with its display name in `title`.\n- A key that accepts a fixed set of values that the form does not show as a list is defined as an `enum`.\n- A key with a range, length or format rule carries the `minimum`, `maximum`, `minLength`, `maxLength` or `pattern` keyword.\n- Two keys that you must send together are linked by a `dependentRequired` rule in the object that holds them.\n- The `type` key lists the Source variants that your team can use. This key is optional. If you omit it, Hevo uses the connector’s base variant. For example, for the `SOURCE_CONNECTOR_MYSQL` connector, Hevo uses `MYSQL`, so send `AURORA` to create an Amazon Aurora MySQL Source.\n\nRefer to [Reading the Schema](/reference/creating-a-pipeline-with-hevo-api#reading-the-schema) for more information about how to read this schema and build a request from it.\n\nThe schema describes only the settings that you can configure through the API. A connector that authenticates with OAuth has an `auth` object, in which you send the credentials of your own OAuth app. Hevo exchanges them for an authorization, so the Source is set up without a browser sign-in. A connector that offers a choice of authentication methods lists every one of them in its authentication method key under `config`, including the method that signs in through a browser. To set up the Source without a browser, keep or select the OAuth method and send the `auth` object. The `auth` object is not listed under the top-level `required` keyword, but a request that selects an OAuth method without sending the `auth` object is rejected.\n\nIn the `auth` object, send the `client_id` and `client_secret` of your app under `client_access`, along with one of the following tokens:\n\n- `refresh_token`: A long-lived credential that Hevo exchanges for a new access token each time the current one expires. Most Sources issue a refresh token, so this is the token that most connectors require. The schema always lists both `refresh_token` and `access_token` under `auth`, in an `anyOf` block that requires at least one of them. It does not state which of the two a connector needs, so refer to the <a href=\"https://docs.hevodata.com/edge/sources/\" target=\"_blank\" rel=\"noopener noreferrer\">respective Source documentation</a> for the token to send.\n- `access_token`: The credential that authorizes each call Hevo makes to your Source. Send this for a Source that does not issue a refresh token, such as Facebook Ads and TikTok Ads.\n\nSome connectors also require an app-level credential, such as the `developer_token` for Microsoft Ads. The schema lists it alongside `client_id` and `client_secret` under `auth.client_access`. An app credential is listed in `client_access`, but it is not included in that object’s `required` list. Send it whenever the provider needs it. Hevo does not check for it when it reads the request, but the Source connection test fails without it, and no Pipeline is created.\n\nRefer to [Authenticating SaaS Sources](/reference/authenticating-saas-sources) for more information about the credentials that each Source accepts.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-metadata-sources-connectors-connector-id",
+  "parameters": [
+    {
+      "description": "Unique identifier of the connector, as returned by the [List All Source Connectors](/reference/get_api-v2-metadata-sources-connectors) endpoint. Send this value exactly as that endpoint returns it.",
+      "in": "path",
+      "name": "connector_id",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "type": "string"
+      },
+      "data": {
+        "description": "Configuration details of the connector.",
+        "properties": {
+          "connector_id": {
+            "description": "Unique identifier of the connector.",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "Display name of the Source.",
+            "type": "string"
+          },
+          "schema": {
+            "description": "JSON schema of the `source` object that you send while creating a Pipeline with this connector. The keys of this object are JSON schema keywords and the configuration keys of the connector, spelled exactly as you send them.",
+            "type": "object",
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "connector_id",
+          "display_name",
+          "schema"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "code",
+      "data"
+    ],
+    "type": "object"
+  }
+}

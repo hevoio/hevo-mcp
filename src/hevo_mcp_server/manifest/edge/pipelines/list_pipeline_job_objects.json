@@ -1,0 +1,164 @@
+{
+  "name": "list_pipeline_job_objects",
+  "product": "edge",
+  "resource": "pipelines",
+  "action": "read",
+  "method": "GET",
+  "path": "/api/v2/pipelines/{pipeline_id}/jobs/{job_id}/objects",
+  "summary": "List All Objects Processed in a Pipeline Job",
+  "description": "Retrieves details for all objects processed in the specified `job_id`. Each entry includes the status of the object in the job, the Events that were ingested, loaded and failed for it, and the position in your Source up to which the job read it.\n\nRefer to [Reading the Objects of a Job](/reference/viewing-pipeline-job-history#reading-the-objects-of-a-job) for more information about the ingestion and load stages of an object.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "",
+  "approval": "never",
+  "paginated": true,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/get_api-v2-pipelines-pipeline-id-jobs-job-id-objects",
+  "parameters": [
+    {
+      "description": "Unique identifier of the Pipeline.",
+      "in": "path",
+      "name": "pipeline_id",
+      "required": true,
+      "schema": {
+        "format": "int64",
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    {
+      "description": "Unique identifier of the job.",
+      "in": "path",
+      "name": "job_id",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "Value used to retrieve the next set of results. Provide the `next_cursor` value returned in the previous API response.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Maximum number of results the API should return. If not set, the API returns up to 100 items.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 500,
+        "minimum": 1,
+        "type": "integer"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": {
+    "properties": {
+      "code": {
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "enum": [
+          "Success"
+        ],
+        "type": "string"
+      },
+      "data": {
+        "description": "List containing the details of each object processed in the specified job.",
+        "items": {
+          "properties": {
+            "id": {
+              "description": "Unique identifier of the object. Hevo uses this value only in this response. To find the same object in the List All Pipeline Objects response, match it by its `object_name` value instead.",
+              "format": "uuid",
+              "type": "string"
+            },
+            "object_name": {
+              "description": "Name of the object in the Source. This is the object’s fully qualified name, the same value that the List All Pipeline Objects endpoint returns in `fully_qualified_name` and that the resync endpoint takes in `object_names`, for example `public.orders`. It is an empty string when Hevo cannot determine the name.",
+              "type": "string"
+            },
+            "status": {
+              "description": "Status of the object in this job.",
+              "enum": [
+                "IN_PROGRESS",
+                "COMPLETED",
+                "COMPLETED_WITH_FAILURES",
+                "DEFERRED",
+                "DEFERRED_WITH_FAILURES",
+                "FAILED",
+                "CANCELING",
+                "CANCELED",
+                "SKIPPED"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "IN_PROGRESS": "Job is currently running.",
+                "COMPLETED": "The job finished successfully and all records were processed.",
+                "COMPLETED_WITH_FAILURES": "Job finished execution but some records or objects failed to process.",
+                "DEFERRED": "The rate limit of the Source interrupted the ingestion of the object. Hevo saved the offset up to which it read the object and loaded the ingested data to the Destination.",
+                "DEFERRED_WITH_FAILURES": "The rate limit of the Source interrupted the ingestion of the object, and one or more of its Events failed during ingestion or loading.",
+                "FAILED": "Job failed due to an error.",
+                "CANCELING": "Job cancellation is currently in progress.",
+                "CANCELED": "Job was canceled and did not complete.",
+                "SKIPPED": "Job was skipped."
+              }
+            },
+            "events_ingested": {
+              "description": "Number of Events read from the Source for this object. This count is null until ingestion starts, and it rises while ingestion is running.",
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "events_loaded": {
+              "description": "Number of Events written to the Destination for this object. This count is null until the load starts.",
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "events_failed": {
+              "description": "Number of Events that failed during ingestion or load for this object. This count is the sum of the Events that failed while Hevo ingested the data and while it loaded the data. The value is null until ingestion starts.",
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "offset": {
+              "description": "Position in your Source up to which this job read the object. This is `null` until the object has been ingested.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "next_cursor": {
+        "description": "Value you can use to fetch the next set of results. Specify this value in the `cursor` query parameter to fetch additional results. This is `null` when no more results are available.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "has_more": {
+        "description": "Indicates whether more results are available.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code",
+      "data",
+      "has_more"
+    ],
+    "type": "object"
+  }
+}

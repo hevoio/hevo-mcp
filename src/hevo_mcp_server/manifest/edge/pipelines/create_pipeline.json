@@ -1,0 +1,549 @@
+{
+  "name": "create_pipeline",
+  "product": "edge",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/v2/pipelines",
+  "summary": "Create a Pipeline",
+  "description": "Creates a Pipeline with the specified Source, Destination, and Pipeline settings.\n\nYou can create a Pipeline for any Source if you can send its credentials in the request. The credentials are of three types:\n\n- **Static token**: The Source authenticates with a credential that does not expire, such as a Stripe API key or a HubSpot private app token. Send it in `config`.\n- **Your own OAuth app**: The Source authenticates with OAuth, and you supply the credentials of an OAuth app that you own. This works for the OAuth connectors that Hevo can authorize through the API. A request that sends `auth` for a connector that does not authorize with OAuth, or for one that Hevo cannot authorize this way, returns a `400`.\n- **Database credentials**: The Source is a database, such as MySQL or PostgreSQL. Send its host, port, user, password and database name in `config`.\n\nTo use your own OAuth app, send its credentials in the `auth` object. Refer to [Authenticating SaaS Sources](/reference/authenticating-saas-sources) for more information about the credentials that each Source accepts.\n\nYou cannot create a Pipeline for a Source that requires you to sign in through a browser. Such a request returns a `400`.\n\nReplication does not start by default. The `create_disabled` value defaults to `true`, so Hevo creates the Pipeline in a disabled state. Enable it with the [Enable a Pipeline](/reference/post_api-v2-pipelines-pipeline-id-actions-enable) endpoint once you are satisfied with it.\n\nHevo validates the whole request before it writes anything. If you send `auth`, Hevo first obtains a token. It then tests the Source and Destination connections in parallel, and waits up to five minutes for each. If a test fails, the request returns a `400` with the connector’s reason, and nothing is saved. The `200` response returns once the Pipeline is configured, before Hevo reads the Source schema. Until Hevo has read the Source schema, the object list can be empty and `source_schema_status` can be incomplete. Before you select objects by name or enable the Pipeline, call [Get Details of a Pipeline](/reference/get_api-v2-pipelines-pipeline-id) or [List All Pipeline Objects](/reference/get_api-v2-pipelines-pipeline-id-objects) and wait until the schema is ready.\n\nRefer to [Creating a Pipeline with Hevo API](/reference/creating-a-pipeline-with-hevo-api#step-2-create-the-pipeline) for more information about the steps for creating a Pipeline.\n",
+  "destructive": false,
+  "consequence": "",
+  "title": "Create Edge Pipeline",
+  "approval": "never",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://edge-api-docs.hevodata.com/reference/post_api-v2-pipelines",
+  "parameters": [],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "destination_id"
+          ]
+        },
+        {
+          "required": [
+            "destination"
+          ]
+        }
+      ],
+      "required": [
+        "name",
+        "source",
+        "destination_prefix",
+        "load_mode",
+        "replication_type",
+        "schema_evolution",
+        "schedule",
+        "failure_handling_policy"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name for your Pipeline, not exceeding 255 characters. The name must start with a letter or a digit, and can contain only letters, digits, spaces, hyphens (-) and underscores (_). Hevo removes any leading and trailing spaces."
+        },
+        "source": {
+          "anyOf": [
+            {
+              "required": [
+                "config"
+              ]
+            },
+            {
+              "required": [
+                "auth"
+              ]
+            }
+          ],
+          "description": "Select the Source you want to configure in your Pipeline.",
+          "properties": {
+            "name": {
+              "description": "Unique name for your Source, not exceeding 255 characters. The same character rules apply as for the Pipeline name.",
+              "type": "string"
+            },
+            "connector_id": {
+              "description": "Connector used by Hevo to ingest data from your Source. Retrieve this value from the [List All Source Connectors](/reference/get_api-v2-metadata-sources-connectors) endpoint.\n\nThe `connector_id` and `type` values must be a pair that the List All Source Connectors endpoint returns. Send each value exactly as that endpoint returns it.\n",
+              "type": "string"
+            },
+            "type": {
+              "description": "Variant of the Source you want the Pipeline to ingest data from. This field is optional. If you do not send it, Hevo uses the connector’s base variant.",
+              "type": "string"
+            },
+            "config": {
+              "additionalProperties": true,
+              "description": "Configuration settings for the Source. The fields that the connector accepts are returned by the [Get Configuration Details of a Source Connector](/reference/get_api-v2-metadata-sources-connectors-connector-id) endpoint. Credential fields are accepted here and are never returned. The version 2 API does not return the Source configuration in any response.",
+              "type": "object"
+            },
+            "auth": {
+              "description": "Credentials of your own OAuth app, for a Source that authenticates with OAuth. When you send this object, `config` leaves out only the authorization field. The settings that the Source form shows after you authorize it are still required, such as `customer_id` for Google Ads.",
+              "properties": {
+                "client_access": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "The `client_id` and `client_secret` of your OAuth app, along with any app-level credential that the provider needs, such as `developer_token`. Hevo requires the client ID and the client secret, and does not check the app-level credentials.",
+                  "properties": {
+                    "client_id": {
+                      "type": "string"
+                    },
+                    "client_secret": {
+                      "format": "password",
+                      "type": "string",
+                      "writeOnly": true
+                    }
+                  },
+                  "required": [
+                    "client_id",
+                    "client_secret"
+                  ],
+                  "type": "object"
+                },
+                "refresh_token": {
+                  "description": "Long-lived token that Hevo exchanges for a new access token when the current one expires. Send this or `access_token`.",
+                  "format": "password",
+                  "type": "string",
+                  "writeOnly": true
+                },
+                "access_token": {
+                  "description": "Token that authorizes each call Hevo makes to your Source. Send this or `refresh_token` for a Source that does not issue a refresh token.",
+                  "format": "password",
+                  "type": "string",
+                  "writeOnly": true
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": [
+            "name",
+            "connector_id"
+          ],
+          "type": "object"
+        },
+        "destination_id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Unique identifier of the Destination where you want to load data. This field is required when you do not send the `destination` object. Send this field or the `destination` object, not both.",
+          "minimum": 1
+        },
+        "destination": {
+          "allOf": [
+            {
+              "type": "object",
+              "required": [
+                "name",
+                "connector_id"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Unique name for the Destination."
+                },
+                "connector_id": {
+                  "type": "string",
+                  "description": "Identifier of the Destination connector, for example `snowflake`. Send this value exactly as the List All Destination Connectors endpoint returns it."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "(Optional) Type of the Destination. If you send it, it must match the `connector_id` value."
+                },
+                "config": {
+                  "type": "object",
+                  "description": "Configuration settings for the Destination connector.",
+                  "additionalProperties": true
+                }
+              }
+            }
+          ],
+          "description": "A new Destination to create along with the Pipeline. Send this instead of `destination_id`. Creating a Destination this way also needs the permission to create a Destination, which Hevo checks before it validates the body. Hevo tests the new Destination in parallel with the Source and saves it only after both tests pass. It is not removed again if a later step of the Pipeline creation fails, so delete it yourself in that case."
+        },
+        "destination_prefix": {
+          "description": "Prefix that you want Hevo to add to the Destination table names. Hevo removes any leading and trailing spaces, and checks the format against the rules of the Destination type. The prefix must also be unique among your team’s Pipelines that load into the same existing Destination.\n\nYou cannot change the prefix after the Pipeline is created.\n",
+          "type": "string"
+        },
+        "options": {
+          "type": "object",
+          "description": "Settings that control how the Pipeline starts. Send `create_disabled` and `include_all_objects` inside this object. Sent at the top level of the body, they are ignored and their defaults apply.",
+          "properties": {
+            "create_disabled": {
+              "type": "boolean",
+              "description": "If set to true, Hevo creates the Pipeline in a disabled state, without starting replication. Enable the Pipeline later to begin replicating data.",
+              "default": true
+            },
+            "include_all_objects": {
+              "type": "boolean",
+              "description": "If set to true, Hevo selects all Source objects for replication. It defaults to the opposite of `create_disabled`. A Pipeline created active therefore starts with every object selected, and a Pipeline created disabled starts with none. Setting both this field and `create_disabled` to `false` returns a 400."
+            }
+          }
+        },
+        "replication_type": {
+          "description": "Type of data that you want Hevo to replicate from your Source objects.\n\nThe value you send must also be one that your Source connector offers. If it is not, the request returns a `400`.\n\nCall the [Get Configuration Details of a Source Connector](/reference/get_api-v2-metadata-sources-connectors-connector-id) endpoint to see what the connector supports.\n",
+          "enum": [
+            "HISTORICAL_AND_INCREMENTAL",
+            "INCREMENTAL_ONLY"
+          ],
+          "type": "string",
+          "x-enumDescriptions": {
+            "HISTORICAL_AND_INCREMENTAL": "Hevo first replicates all existing data from the selected Source objects and then captures only data changes.",
+            "INCREMENTAL_ONLY": "Hevo replicates only new and changed data from your Source object after the Pipeline is created."
+          }
+        },
+        "load_mode": {
+          "description": "Mode in which you want to load data from the Source objects into the Destination tables.\n\nThis field accepts only `APPEND` and `MERGE`, and only the ones that both your Source connector and your Destination support. Any other value, including `HISTORY_TRACKING` and `OVERWRITE`, returns a 400.\n\n`HISTORY_TRACKING` is an object-level load mode. Set it on an object through the Manage Objects in a Pipeline endpoint. Read <a href=\"https://docs.hevodata.com/edge/data-ingestion/history-mode/\" target=\"_blank\" rel=\"noopener noreferrer\">History Mode</a> for more information.\n",
+          "enum": [
+            "MERGE",
+            "APPEND"
+          ],
+          "type": "string",
+          "x-enumDescriptions": {
+            "MERGE": "Existing records are updated based on matching criteria, such as primary keys, and new records are added to your Destination table if no match is found.",
+            "APPEND": "New records are added at the end of your Destination table without modifying or deleting any existing data."
+          }
+        },
+        "schema_evolution": {
+          "description": "Policy that you want Hevo to apply when the schema of your Source changes.",
+          "enum": [
+            "ALLOW_ALL",
+            "BLOCK_ALL",
+            "ALLOW_COLUMN_LEVEL"
+          ],
+          "type": "string",
+          "x-enumDescriptions": {
+            "ALLOW_ALL": "Hevo replicates all Source schema changes, such as new or updated columns and tables, to the Destination.",
+            "BLOCK_ALL": "Hevo does not replicate any Source schema changes to the Destination.",
+            "ALLOW_COLUMN_LEVEL": "Hevo replicates only new columns from the Source to the Destination. New schemas and tables are not synced."
+          }
+        },
+        "schedule": {
+          "description": "Interval at which you want the Pipeline to run jobs to process data.",
+          "properties": {
+            "sync_type": {
+              "description": "Specifies how you want Hevo to trigger Pipeline runs.",
+              "enum": [
+                "SCHEDULED",
+                "ON_DEMAND"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "SCHEDULED": "Pipeline runs automatically at the interval set in frequency_minutes.",
+                "ON_DEMAND": "Pipeline runs only when you trigger it. Hevo does not run it automatically."
+              }
+            },
+            "frequency_minutes": {
+              "description": "Interval between Pipeline runs (in minutes). This value is not required when `sync_type` is _ON_DEMAND_, and Hevo ignores it in that case. The accepted values are 15, 20, 30 and 45 minutes, and whole hours from 60 to 1440 minutes. The values 5 and 10 are accepted only for a team that has smaller sync frequencies enabled. This value is required when `sync_type` is `SCHEDULED`, and must be greater than 0.",
+              "format": "int64",
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "sync_type"
+          ],
+          "type": "object"
+        },
+        "failure_handling_policy": {
+          "description": "Specifies how you want Hevo to handle failures for Source objects.",
+          "properties": {
+            "object_failure_level": {
+              "description": "Specifies how you want Hevo to continue data replication if an object fails.",
+              "enum": [
+                "PARTIAL",
+                "ALL_OR_NONE"
+              ],
+              "type": "string",
+              "x-enumDescriptions": {
+                "PARTIAL": "If an object fails, the Pipeline continues replicating data for the remaining objects.",
+                "ALL_OR_NONE": "Hevo loads the data of an object only when all of its Events are processed successfully in a job."
+              }
+            },
+            "object_failure_threshold": {
+              "description": "Number of failed Events that you want to allow for an object in a job. Hevo stops loading the data of that object once its failed Events exceed this number. This applies when `object_failure_level` is _PARTIAL_. This field is required when `object_failure_level` is `PARTIAL`, and its value must be greater than 0.\n\nWith `ALL_OR_NONE` the field is optional, and Hevo stores 10000 when you leave it out. You cannot change this value after the Pipeline is created.\n",
+              "format": "int64",
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "object_failure_level"
+          ],
+          "type": "object"
+        },
+        "latency_alert": {
+          "description": "Configuration for the alerts that you want Hevo to send when data loading is delayed.",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Specifies whether you want Hevo to send alerts for Pipeline latency.",
+              "type": "boolean"
+            },
+            "threshold_minutes": {
+              "description": "Delay after which Hevo sends you a latency alert (in minutes). Hevo measures this delay from the time your data is ready in the Source to the time it is loaded into your Destination. This value is required when `enabled` is true. The value must be between 5 and 21600 minutes (15 days). When `sync_type` is `SCHEDULED`, it must also be at least twice the `frequency_minutes` value, so a 30-minute schedule needs at least 60.\n\nWhen `enabled` is `false`, you can leave this field out.\n",
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "required": true
+  },
+  "response": {
+    "type": "object",
+    "required": [
+      "code",
+      "data"
+    ],
+    "properties": {
+      "code": {
+        "type": "string",
+        "description": "Status of the API call. Returns `Success` for a successful request.",
+        "enum": [
+          "Success"
+        ]
+      },
+      "message": {
+        "type": "string",
+        "description": "Description of the action that Hevo performed."
+      },
+      "data": {
+        "type": "object",
+        "description": "Details of the Pipeline.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier of the Pipeline."
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the Pipeline."
+          },
+          "state": {
+            "type": "string",
+            "description": "Current lifecycle state of the Pipeline.\n\nThis endpoint never returns `Deleting` or `Deleted`.\n",
+            "enum": [
+              "Created",
+              "Created Source",
+              "Created Destination",
+              "Configured Pipeline",
+              "Configured Object",
+              "Initializing",
+              "Initialized",
+              "Disabling",
+              "Disabled",
+              "Enabling",
+              "Restarting",
+              "Failed"
+            ],
+            "x-enumDescriptions": {
+              "Created": "Pipeline has been created, but the full configuration is still in progress.",
+              "Created Source": "Source has been configured for the Pipeline.",
+              "Created Destination": "Destination has been configured for the Pipeline.",
+              "Configured Pipeline": "Pipeline settings have been configured.",
+              "Configured Object": "Objects have been configured for replication.",
+              "Initializing": "Pipeline is starting and preparing to replicate data.",
+              "Initialized": "Pipeline has been fully set up and is replicating data.",
+              "Disabling": "Pipeline is being disabled.",
+              "Disabled": "Pipeline has been disabled and is no longer replicating data.",
+              "Enabling": "Pipeline is being enabled.",
+              "Restarting": "Pipeline is restarting after a resync.",
+              "Failed": "Pipeline could not be set up or could not continue replicating data."
+            }
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "Indicates whether the Pipeline is disabled. This value is _true_ while the Pipeline is in the _Disabled_ or _Disabling_ state. After a create, the state is usually _Disabled_, or a creation state such as _Initializing_."
+          },
+          "source": {
+            "type": "object",
+            "description": "Source details configured in the Pipeline.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name specified for the Source in Hevo."
+              },
+              "connector_id": {
+                "type": "string",
+                "description": "Identifier of the connector that ingests data from this Source. This is the `connector_id` value that the Pipeline was created with. For example, _SOURCE_CONNECTOR_POSTGRES_."
+              },
+              "type": {
+                "type": "string",
+                "description": "Variant of the Source."
+              }
+            }
+          },
+          "destination_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier of the Destination the Pipeline loads into."
+          },
+          "destination": {
+            "type": "object",
+            "description": "Destination details configured in the Pipeline.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name specified for the Destination in Hevo."
+              },
+              "connector_id": {
+                "type": "string",
+                "description": "Identifier of the connector used to load data into this Destination."
+              },
+              "type": {
+                "type": "string",
+                "description": "Type of the Destination."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "CREATED",
+                  "FAILED"
+                ],
+                "description": "Current status of the Destination.\n\nThis endpoint never returns `DELETING`, `DELETED` or `DELETE_FAILED`.\n",
+                "x-enumDescriptions": {
+                  "CREATED": "The Destination is ready to receive data.",
+                  "FAILED": "Hevo created the Destination but could not complete its setup."
+                }
+              }
+            }
+          },
+          "destination_prefix": {
+            "type": "string",
+            "description": "Prefix used for Destination table names."
+          },
+          "load_mode": {
+            "type": "string",
+            "description": "Mode used to load data from the Source objects into the Destination tables.\n\nA Pipeline-level `load_mode` is only `APPEND` or `MERGE`. `HISTORY_TRACKING` appears only on an object’s settings.\n",
+            "enum": [
+              "APPEND",
+              "MERGE"
+            ],
+            "x-enumDescriptions": {
+              "APPEND": "New records are added at the end of your Destination table without modifying or deleting any existing data.",
+              "MERGE": "Existing records are updated based on matching criteria, such as primary keys, and new records are added to your Destination table if no match is found."
+            }
+          },
+          "schema_evolution": {
+            "type": "string",
+            "enum": [
+              "ALLOW_ALL",
+              "BLOCK_ALL",
+              "ALLOW_COLUMN_LEVEL"
+            ],
+            "description": "Policy for applying Source schema changes to the Destination schema.",
+            "x-enumDescriptions": {
+              "ALLOW_ALL": "Hevo replicates all Source schema changes, such as new or updated columns and tables, to the Destination.",
+              "BLOCK_ALL": "Hevo does not replicate any Source schema changes to the Destination.",
+              "ALLOW_COLUMN_LEVEL": "Hevo replicates only new columns from the Source to the Destination. New schemas and tables are not synced."
+            }
+          },
+          "replication_type": {
+            "type": "string",
+            "description": "Type of data Hevo replicates from your Source objects.",
+            "enum": [
+              "HISTORICAL_AND_INCREMENTAL",
+              "INCREMENTAL_ONLY"
+            ],
+            "x-enumDescriptions": {
+              "HISTORICAL_AND_INCREMENTAL": "Hevo first replicates all existing data from the selected Source objects and then captures only data changes.",
+              "INCREMENTAL_ONLY": "Hevo replicates only new and changed data from your Source object after the Pipeline is created."
+            }
+          },
+          "schedule": {
+            "type": "object",
+            "properties": {
+              "sync_type": {
+                "type": "string",
+                "enum": [
+                  "SCHEDULED",
+                  "ON_DEMAND"
+                ],
+                "description": "Determines how Pipeline runs are triggered.",
+                "x-enumDescriptions": {
+                  "SCHEDULED": "Pipeline runs automatically at the interval set in frequency_minutes.",
+                  "ON_DEMAND": "Pipeline runs only when you trigger it. Hevo does not run it automatically."
+                }
+              },
+              "frequency_minutes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int64",
+                "description": "Interval between Pipeline runs (in minutes). This field is always present. Its value is `null` when the Pipeline has no fixed interval. Ignore this value when `sync_type` is `ON_DEMAND`."
+              }
+            },
+            "description": "Interval at which the Pipeline runs jobs to process data."
+          },
+          "latency_alert": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Indicates whether alerts are enabled for Pipeline latency."
+              },
+              "threshold_minutes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Delay after which Hevo sends you a latency alert (in minutes). Hevo measures this delay from the time your data is ready in the Source to the time it is loaded into your Destination. This field is always present. Its value is `null` when `enabled` is `false`, and also when the alert is on but no threshold is stored."
+              }
+            },
+            "description": "Configuration for triggering alerts when data loading is delayed."
+          },
+          "failure_handling_policy": {
+            "type": "object",
+            "properties": {
+              "object_failure_level": {
+                "type": "string",
+                "enum": [
+                  "PARTIAL",
+                  "ALL_OR_NONE"
+                ],
+                "description": "Handling of data replication if an object fails.",
+                "x-enumDescriptions": {
+                  "PARTIAL": "If an object fails, the Pipeline continues replicating data for the remaining objects.",
+                  "ALL_OR_NONE": "Hevo loads the data of an object only when all of its Events are processed successfully in a job."
+                }
+              },
+              "object_failure_threshold": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int64",
+                "description": "Number of failed Events allowed for an object in a job. Hevo stops loading the data of that object once its failed Events exceed this number. This value applies only when `object_failure_level` is `PARTIAL`. The field is always present, and its value can be `null` for a Pipeline that does not store one, such as one set to `ALL_OR_NONE`."
+              }
+            },
+            "description": "Defines how failures are handled for Source objects."
+          },
+          "created_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp when the Pipeline was created, in Unix epoch time (in milliseconds)."
+          },
+          "created_by": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user who created the Pipeline."
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp when the Pipeline was last updated, in Unix epoch time (in milliseconds)."
+          },
+          "updated_by": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user who last updated the Pipeline."
+          }
+        }
+      }
+    }
+  }
+}

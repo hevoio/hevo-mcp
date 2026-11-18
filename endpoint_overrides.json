@@ -1,0 +1,411 @@
+{
+  "_comment": "Hand-written extras for every endpoint, keyed by '<product> <METHOD> <path>'. Names, actions and descriptions otherwise come from the OpenAPI specs. Keys: records (required for every endpoint: true if the endpoint returns real pipeline records, which must not leave the customer's region, so it must then also be excluded; the build fails for an endpoint without it, so a spec sync can't ship an unreviewed endpoint), name (endpoint name), action (read, write or delete), destructive (a write that loses or re-ingests data), consequence (one line on the effect of the change, shown to agents and in the approval prompt), title (the change as the approval prompt names it: 'Delete Edge Destination'; '{}' marks where the resource id goes, as in 'Run Standard Pipeline {} now', otherwise it goes last), description (text prepended to the spec description), exclude (true drops the endpoint), approval (always, never or unless_activating: whether the server asks the user to approve each call; writes default to always, reads to never, and deletes are always), body_required (top-level request body keys that Hevo requires though its spec leaves them optional; the build adds them to the body's required list, so the spec stays as fetched).",
+  "edge GET /api/v2/destinations": {
+    "records": false
+  },
+  "edge POST /api/v2/destinations": {
+    "title": "Create Edge Destination",
+    "approval": "never",
+    "records": false
+  },
+  "edge GET /api/v2/destinations/{destination_id}": {
+    "records": false
+  },
+  "edge PATCH /api/v2/destinations/{destination_id}": {
+    "title": "Update Edge Destination",
+    "consequence": "Affects every Pipeline that loads data into this Destination. If the credentials are incorrect, these Pipelines cannot load data.",
+    "records": false
+  },
+  "edge DELETE /api/v2/destinations/{destination_id}": {
+    "title": "Delete Edge Destination",
+    "consequence": "Deletes this Destination and every Pipeline that loads data into it. This action cannot be undone.",
+    "records": false
+  },
+  "edge GET /api/v2/metadata/destinations/connectors": {
+    "name": "list_destination_connectors",
+    "records": false
+  },
+  "edge GET /api/v2/metadata/destinations/connectors/{connector_id}": {
+    "name": "get_destination_connector",
+    "records": false
+  },
+  "edge GET /api/v2/metadata/sources/connectors": {
+    "name": "list_source_connectors",
+    "records": false
+  },
+  "edge GET /api/v2/metadata/sources/connectors/{connector_id}": {
+    "name": "get_source_connector",
+    "records": false
+  },
+  "edge GET /api/v2/pipelines": {
+    "records": false
+  },
+  "edge POST /api/v2/pipelines": {
+    "title": "Create Edge Pipeline",
+    "approval": "never",
+    "records": false
+  },
+  "edge GET /api/v2/pipelines/{pipeline_id}": {
+    "records": false
+  },
+  "edge PATCH /api/v2/pipelines/{pipeline_id}": {
+    "title": "Update settings of Edge Pipeline",
+    "consequence": "Changes the settings of this Pipeline, such as its schedule or how it loads data. A new schedule applies from the next run.",
+    "records": false
+  },
+  "edge DELETE /api/v2/pipelines/{pipeline_id}": {
+    "title": "Delete Edge Pipeline",
+    "consequence": "Deletes this Pipeline. The tables in the Destination are not deleted. This action cannot be undone.",
+    "records": false
+  },
+  "edge POST /api/v2/pipelines/{pipeline_id}/actions/disable": {
+    "title": "Disable Edge Pipeline",
+    "consequence": "The Pipeline stops reading data from the Source and loading it into the Destination. Jobs that are running finish, unless the request cancels them.",
+    "records": false
+  },
+  "edge POST /api/v2/pipelines/{pipeline_id}/actions/enable": {
+    "title": "Enable Edge Pipeline",
+    "consequence": "The Pipeline starts reading data from the Source and loading it into the Destination.",
+    "records": false
+  },
+  "edge POST /api/v2/pipelines/{pipeline_id}/actions/resync": {
+    "title": "Resync Edge Pipeline",
+    "destructive": true,
+    "consequence": "Reloads all the data from the Source. If the request asks to re-create the tables, the tables in the Destination are deleted and created again.",
+    "records": false
+  },
+  "edge POST /api/v2/pipelines/{pipeline_id}/actions/sync-now": {
+    "title": "Sync Edge Pipeline {} now",
+    "consequence": "Starts a Pipeline run. The data that it reads from the Source counts toward your Events quota.",
+    "records": false
+  },
+  "edge GET /api/v2/pipelines/{pipeline_id}/jobs": {
+    "records": false
+  },
+  "edge GET /api/v2/pipelines/{pipeline_id}/jobs/{job_id}": {
+    "records": false
+  },
+  "edge POST /api/v2/pipelines/{pipeline_id}/jobs/{job_id}/actions/cancel": {
+    "title": "Cancel job of Edge Pipeline",
+    "destructive": true,
+    "consequence": "Stops the tasks of this job that are running.",
+    "records": false
+  },
+  "edge GET /api/v2/pipelines/{pipeline_id}/jobs/{job_id}/objects": {
+    "records": false
+  },
+  "edge GET /api/v2/pipelines/{pipeline_id}/objects": {
+    "records": false
+  },
+  "edge PATCH /api/v2/pipelines/{pipeline_id}/objects": {
+    "title": "Include, exclude, or update objects of Edge Pipeline",
+    "consequence": "Hevo stops ingesting the data of excluded objects.",
+    "records": false
+  },
+  "edge POST /api/v2/pipelines/{pipeline_id}/objects/actions/resync": {
+    "title": "Resync objects of Edge Pipeline",
+    "destructive": true,
+    "consequence": "Reloads the data of these objects from the Source. If the request asks to re-create their tables, the tables are deleted and created again.",
+    "records": false
+  },
+  "edge GET /api/v2/pipelines/{pipeline_id}/objects/{object_name}": {
+    "records": false
+  },
+  "edge GET /api/v2/pipelines/{pipeline_id}/position": {
+    "name": "get_pipeline_position",
+    "records": false
+  },
+  "edge PATCH /api/v2/pipelines/{pipeline_id}/sources": {
+    "title": "Update Source of Edge Pipeline",
+    "consequence": "If the Source credentials are incorrect, the Pipeline cannot read data from the Source.",
+    "records": false
+  },
+  "account GET /api/public/v2.0/accounts/users": {
+    "name": "list_users",
+    "records": false
+  },
+  "account POST /api/public/v2.0/accounts/users": {
+    "name": "invite_user",
+    "title": "Invite user to team",
+    "consequence": "Gives the invited user access to your Hevo account.",
+    "records": false
+  },
+  "account POST /api/public/v2.0/accounts/users-with-roles": {
+    "name": "invite_user_with_roles",
+    "description": "Roles: PIPELINE_COLLABORATOR, PIPELINE_ADMIN, ACTIVATION_COLLABORATOR, ACTIVATION_ADMIN, MODELS_AND_WORKFLOWS_COLLABORATOR, MODELS_AND_WORKFLOWS_ADMIN, BILLING_ADMIN, TEAM_COLLABORATOR, TEAM_ADMIN, or OBSERVER. Any other value returns a 400.",
+    "title": "Invite user to team with roles",
+    "consequence": "Gives the invited user access to your Hevo account with the given roles.",
+    "records": false
+  },
+  "account PUT /api/public/v2.0/accounts/users/{email}": {
+    "name": "update_user_role",
+    "description": "Sets the team role, MEMBER or OWNER, shown as role in list_users. OWNER transfers the team's ownership to this user, and only the team owner can do that (403 otherwise). Roles that grant access to Pipelines, Models or billing are set with update_user_roles.",
+    "title": "Change role of user {}",
+    "consequence": "Changes what this user can access in Hevo; OWNER transfers the team's ownership to this user.",
+    "records": false
+  },
+  "account PUT /api/public/v2.0/accounts/users/{email}/roles": {
+    "name": "update_user_roles",
+    "description": "Roles: PIPELINE_COLLABORATOR, PIPELINE_ADMIN, ACTIVATION_COLLABORATOR, ACTIVATION_ADMIN, MODELS_AND_WORKFLOWS_COLLABORATOR, MODELS_AND_WORKFLOWS_ADMIN, BILLING_ADMIN, TEAM_COLLABORATOR, TEAM_ADMIN, or OBSERVER. Any other value returns a 400.",
+    "title": "Change roles of user {}",
+    "consequence": "Changes what this user can access in Hevo.",
+    "records": false
+  },
+  "account DELETE /api/public/v2.0/accounts/users/{email}": {
+    "name": "delete_user",
+    "title": "Remove user {} from team",
+    "consequence": "Removes the user's access to your Hevo account.",
+    "records": false
+  },
+  "account GET /api/public/v2.0/accounts/oauth": {
+    "name": "list_oauth_accounts",
+    "records": false
+  },
+  "account GET /api/public/v2.0/accounts/oauth/{id}": {
+    "name": "get_oauth_account",
+    "records": false
+  },
+  "account DELETE /api/public/v2.0/accounts/oauth/{id}": {
+    "name": "delete_oauth_account",
+    "title": "Delete OAuth account",
+    "consequence": "Every Pipeline that uses this OAuth account can no longer connect to its Source until you authorize another account.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/destinations": {
+    "records": false
+  },
+  "standard POST /api/public/v2.0/destinations": {
+    "title": "Create Standard Destination",
+    "approval": "never",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/destinations/{id}": {
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/destinations/{id}": {
+    "name": "standard_update_destination",
+    "title": "Update Standard Destination",
+    "consequence": "Affects every Pipeline that loads data into this Destination. If the credentials are incorrect, these Pipelines cannot load data.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/destinations/{id}/load-now": {
+    "name": "standard_load_destination_now",
+    "title": "Load Events to Standard Destination {} now",
+    "consequence": "Loads the Events that are waiting for this Destination.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/destinations/{id}/tables/{table_name}/stats": {
+    "records": false
+  },
+  "standard GET /api/public/v2.0/models": {
+    "records": false
+  },
+  "standard POST /api/public/v2.0/models": {
+    "title": "Create Model",
+    "approval": "never",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/models/{id}": {
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/models/{id}": {
+    "title": "Update Model",
+    "consequence": "Changes the query or the settings of this Model.",
+    "records": false
+  },
+  "standard DELETE /api/public/v2.0/models/{id}/reset": {
+    "title": "Reset Model",
+    "action": "write",
+    "destructive": true,
+    "consequence": "Deletes the output of this Model and builds it again.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/models/{id}/run-now": {
+    "name": "standard_run_model",
+    "title": "Run Model",
+    "consequence": "Starts a run of this Model.",
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/models/{id}/schedule": {
+    "name": "standard_update_model_schedule",
+    "title": "Change schedule of Model",
+    "consequence": "Changes how often this Model runs.",
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/models/{id}/status": {
+    "name": "standard_update_model_status",
+    "title": "Pause or resume Model",
+    "consequence": "Pausing stops this Model from running.",
+    "approval": "unless_activating",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines": {
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines": {
+    "title": "Create Standard Pipeline",
+    "description": "json_parsing_strategy is required: without it Hevo returns a 500 with no message.",
+    "approval": "never",
+    "body_required": ["json_parsing_strategy"],
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}": {
+    "records": false
+  },
+  "standard DELETE /api/public/v2.0/pipelines/{id}": {
+    "title": "Delete Standard Pipeline",
+    "description": "Pass query.dropResource explicitly. Set it to true to delete the tables in the Destination as well, or to false to keep them. Ask the user which they want.",
+    "consequence": "Deletes this Pipeline. If the request asks to delete the tables in the Destination, they are deleted too. This action cannot be undone.",
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/auto-mapping": {
+    "name": "standard_update_auto_mapping",
+    "title": "Turn Auto Mapping on or off for Standard Pipeline",
+    "consequence": "Turns Auto Mapping on or off for this Pipeline.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/event-types": {
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/event-types/{event_type}/include": {
+    "title": "Include Event Type in Standard Pipeline",
+    "consequence": "Hevo starts loading the Events of this Event Type again.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/event-types/{event_type}/skip": {
+    "title": "Skip Event Type in Standard Pipeline",
+    "consequence": "Hevo stops loading the Events of this Event Type.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/mappings/{event_type}": {
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/mappings/{event_type}": {
+    "title": "Update schema mapping of Event Type",
+    "consequence": "Changes how Hevo loads every future Event of this Event Type.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/objects": {
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/objects/{object_name}": {
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/objects/{object_name}/include": {
+    "title": "Include object in Standard Pipeline",
+    "consequence": "Hevo starts ingesting the data of this object again.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/objects/{object_name}/pause": {
+    "title": "Pause object of Standard Pipeline",
+    "consequence": "Hevo stops ingesting the data of this object.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/objects/{object_name}/position": {
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/objects/{object_name}/position": {
+    "name": "standard_update_object_position",
+    "title": "Change position of object in Standard Pipeline",
+    "destructive": true,
+    "consequence": "Moving the position can skip data or load it again.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/objects/{object_name}/query-mode": {
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/objects/{object_name}/query-mode": {
+    "title": "Change query mode of object in Standard Pipeline",
+    "consequence": "Changing the query mode can skip data or load it again.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/objects/{object_name}/restart": {
+    "title": "Restart object of Standard Pipeline",
+    "destructive": true,
+    "consequence": "Loads all the data of this object from the Source again.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/objects/{object_name}/resume": {
+    "title": "Resume object of Standard Pipeline",
+    "consequence": "Hevo starts ingesting the data of this object again.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/objects/{object_name}/skip": {
+    "title": "Skip object of Standard Pipeline",
+    "consequence": "Hevo stops ingesting the data of this object.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/objects/{object_name}/stats": {
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/position": {
+    "name": "standard_get_pipeline_position",
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/position": {
+    "name": "standard_update_pipeline_position",
+    "title": "Change position of Standard Pipeline",
+    "destructive": true,
+    "consequence": "Moving the log position can skip data or load it again.",
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/priority": {
+    "title": "Change priority of Standard Pipeline",
+    "consequence": "Changes the priority of this Pipeline over your other Pipelines.",
+    "records": false
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/run-now": {
+    "name": "standard_run_pipeline",
+    "title": "Run Standard Pipeline {} now",
+    "consequence": "Starts a Pipeline run. The data that it reads from the Source counts toward your Events quota.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/schedule": {
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/schedule": {
+    "title": "Change schedule of Standard Pipeline",
+    "consequence": "Changes how often this Pipeline runs.",
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/source": {
+    "name": "standard_update_pipeline_source",
+    "title": "Update Source of Standard Pipeline",
+    "consequence": "If the Source credentials are incorrect, the Pipeline cannot read data from the Source.",
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/status": {
+    "name": "standard_update_pipeline_status",
+    "title": "Pause or resume Standard Pipeline",
+    "consequence": "Pausing stops the Pipeline from reading data from the Source and loading it into the Destination.",
+    "approval": "unless_activating",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/transformations": {
+    "records": false
+  },
+  "standard PUT /api/public/v2.0/pipelines/{id}/transformations": {
+    "title": "Update transformation code of Standard Pipeline",
+    "consequence": "Changes how Hevo transforms every future Event.",
+    "records": false
+  },
+  "standard GET /api/public/v2.0/pipelines/{id}/transformations/sample": {
+    "exclude": true,
+    "records": true
+  },
+  "standard POST /api/public/v2.0/pipelines/{id}/transformations/test": {
+    "exclude": true,
+    "records": true
+  },
+  "standard GET /api/public/v2.0/workflows": {
+    "records": false
+  },
+  "standard GET /api/public/v2.0/workflows/{id}": {
+    "records": false
+  },
+  "standard POST /api/public/v2.0/workflows/{id}/run-now": {
+    "title": "Run Workflow",
+    "consequence": "Starts a run of this Workflow.",
+    "records": false
+  }
+}

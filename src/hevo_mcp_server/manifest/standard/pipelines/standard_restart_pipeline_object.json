@@ -1,0 +1,38 @@
+{
+  "name": "standard_restart_pipeline_object",
+  "product": "standard",
+  "resource": "pipelines",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/pipelines/{id}/objects/{object_name}/restart",
+  "summary": "Restart Pipeline Object",
+  "description": "",
+  "destructive": true,
+  "consequence": "Loads all the data of this object from the Source again.",
+  "title": "Restart object of Standard Pipeline",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/restartpipelineobject",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    {
+      "name": "object_name",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

@@ -1,0 +1,30 @@
+{
+  "name": "standard_load_destination_now",
+  "product": "standard",
+  "resource": "destinations",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/destinations/{id}/load-now",
+  "summary": "Load Events to Destination",
+  "description": "",
+  "destructive": false,
+  "consequence": "Loads the Events that are waiting for this Destination.",
+  "title": "Load Events to Standard Destination {} now",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/triggereventsload",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": null,
+  "response": null
+}

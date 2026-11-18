@@ -1,0 +1,45 @@
+{
+  "name": "update_user_roles",
+  "product": "account",
+  "resource": "accounts",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/accounts/users/{email}/roles",
+  "summary": "Update user roles",
+  "description": "Roles: PIPELINE_COLLABORATOR, PIPELINE_ADMIN, ACTIVATION_COLLABORATOR, ACTIVATION_ADMIN, MODELS_AND_WORKFLOWS_COLLABORATOR, MODELS_AND_WORKFLOWS_ADMIN, BILLING_ADMIN, TEAM_COLLABORATOR, TEAM_ADMIN, or OBSERVER. Any other value returns a 400.",
+  "destructive": false,
+  "consequence": "Changes what this user can access in Hevo.",
+  "title": "Change roles of user {}",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updateuserrolesforrbac",
+  "parameters": [
+    {
+      "name": "email",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "required": [
+        "roles"
+      ],
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "required": false
+  },
+  "response": null
+}

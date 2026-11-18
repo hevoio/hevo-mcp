@@ -1,0 +1,43 @@
+{
+  "name": "update_user_role",
+  "product": "account",
+  "resource": "accounts",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/accounts/users/{email}",
+  "summary": "Update user role",
+  "description": "Sets the team role, MEMBER or OWNER, shown as role in list_users. OWNER transfers the team's ownership to this user, and only the team owner can do that (403 otherwise). Roles that grant access to Pipelines, Models or billing are set with update_user_roles.",
+  "destructive": false,
+  "consequence": "Changes what this user can access in Hevo; OWNER transfers the team's ownership to this user.",
+  "title": "Change role of user {}",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updateuserrole",
+  "parameters": [
+    {
+      "name": "email",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "MEMBER",
+            "OWNER"
+          ]
+        }
+      }
+    },
+    "required": false
+  },
+  "response": null
+}

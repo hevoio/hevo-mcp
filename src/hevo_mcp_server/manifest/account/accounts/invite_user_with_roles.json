@@ -1,0 +1,39 @@
+{
+  "name": "invite_user_with_roles",
+  "product": "account",
+  "resource": "accounts",
+  "action": "write",
+  "method": "POST",
+  "path": "/api/public/v2.0/accounts/users-with-roles",
+  "summary": "Invite user to team with roles",
+  "description": "Roles: PIPELINE_COLLABORATOR, PIPELINE_ADMIN, ACTIVATION_COLLABORATOR, ACTIVATION_ADMIN, MODELS_AND_WORKFLOWS_COLLABORATOR, MODELS_AND_WORKFLOWS_ADMIN, BILLING_ADMIN, TEAM_COLLABORATOR, TEAM_ADMIN, or OBSERVER. Any other value returns a 400.",
+  "destructive": false,
+  "consequence": "Gives the invited user access to your Hevo account with the given roles.",
+  "title": "Invite user to team with roles",
+  "approval": "always",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/createuserwithroles",
+  "parameters": [],
+  "request_body": {
+    "schema": {
+      "required": [
+        "roles"
+      ],
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "required": false
+  },
+  "response": null
+}

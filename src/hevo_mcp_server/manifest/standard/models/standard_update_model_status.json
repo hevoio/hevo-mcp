@@ -1,0 +1,44 @@
+{
+  "name": "standard_update_model_status",
+  "product": "standard",
+  "resource": "models",
+  "action": "write",
+  "method": "PUT",
+  "path": "/api/public/v2.0/models/{id}/status",
+  "summary": "Update Model's activity status",
+  "description": "",
+  "destructive": false,
+  "consequence": "Pausing stops this Model from running.",
+  "title": "Pause or resume Model",
+  "approval": "unless_activating",
+  "paginated": false,
+  "deprecated": false,
+  "docs": "https://api-docs.hevodata.com/reference/updatemodelactivitystatus",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  ],
+  "request_body": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "PAUSED"
+          ]
+        }
+      }
+    },
+    "required": true
+  },
+  "response": null
+}

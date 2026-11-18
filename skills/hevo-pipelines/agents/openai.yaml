@@ -1,0 +1,7 @@
+# Codex-only metadata for this skill. Other agents ignore this file.
+interface:
+  display_name: "Hevo Pipelines"
+  short_description: "View and manage your Hevo Pipelines through the Hevo MCP tools"
+  default_prompt: "Use $hevo-pipelines to list my Hevo Pipelines and display the ones that need attention."
+policy:
+  allow_implicit_invocation: true

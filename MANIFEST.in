@@ -1,0 +1,8 @@
+# What the source distribution carries beyond the package: enough to rebuild the manifest and run the tests.
+include README.md CHANGELOG.md LICENSE CONTRIBUTING.md
+include build_manifest.py endpoint_overrides.json
+recursive-include openapi *.json
+recursive-include config *.toml
+recursive-include scripts *.py
+recursive-include tests *.py
+recursive-include skills *.md *.yaml
