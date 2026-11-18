@@ -20,8 +20,9 @@ RETRY_SECONDS = 3600  # after a failed check
 TIMEOUT_SECONDS = 2.0
 _cache: dict[str, tuple[float, str | None]] = {}
 
-HOW_TO_UPDATE = ("Claude Code plugin: /plugin marketplace update hevo-data, then restart. Codex: refresh the "
-                 "hevo-data marketplace. PyPI install: change the version in your MCP settings (or use hevo-mcp@latest). "
+HOW_TO_UPDATE = ("Claude Code plugin: run claude plugin marketplace update hevo-data, then claude plugin update "
+                 "hevo-data@hevo-data, and start a new session. Codex: run codex plugin marketplace upgrade hevo-data, "
+                 "and start a new session. PyPI install: change the version in your MCP settings (or use hevo-mcp@latest). "
                  "Shared server: ask its operator.")
 
 

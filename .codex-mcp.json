@@ -7,6 +7,8 @@
         "hevo-mcp==1.0.0",
         "-c",
         "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt",
+        "--python",
+        "3.12",
         "hevo-mcp"
       ],
       "env_vars": [

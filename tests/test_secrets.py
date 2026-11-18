@@ -46,13 +46,15 @@ def test_references_are_found_anywhere_and_misplaced_ones_are_named():
     # Only a field that names a secret may hold a reference: a host, name or query must not.
     assert secrets.misplaced(body) == ["source.config.hosts[0]", "again"]
     assert secrets.misplaced({"auth": {"client_secret": "$secret_file:x", "api_key": "$secret_file:k"}}) == []
+    # A SaaS Source's credential is often just `token` or `key` (the skill names `token`).
+    assert secrets.misplaced({"config": {"token": "$secret_file:t", "key": "$secret_file:k"}}) == []
 
 
 def test_a_reference_is_never_redacted_so_the_user_can_see_it():
     from hevo_mcp_server import sanitize
 
-    cleaned = sanitize.clean({"password": "$secret_file:mysql-prod", "token": "real-value"})
-    assert cleaned == {"password": "$secret_file:mysql-prod", "token": "real-value"}
+    cleaned = sanitize.clean({"password": "$secret_file:mysql-prod", "token": "$secret_file:t", "key": "real-value"})
+    assert cleaned == {"password": "$secret_file:mysql-prod", "token": "$secret_file:t", "key": "[redacted]"}
     assert sanitize.clean({"password": "hunter2"}) == {"password": "[redacted]"}
 
 
@@ -186,6 +188,26 @@ def test_references_are_resolved_after_approval_and_the_prompt_shows_only_the_re
     [sent] = fake.writes()
     assert json.loads(sent.content)["config"]["password"] == PASSWORD
     assert len(prompts) == 1 and PASSWORD not in prompts[0]
+
+
+@pytest.mark.parametrize("ref", ["$secret_file:../evil", "$secret_file:sub/name", "$secret_file:.hidden"])
+def test_a_reference_that_is_a_path_is_refused_before_the_approval_prompt(env, secrets_dir, ref):
+    fake = FakeHevo()
+    prompts = []
+
+    async def user(message, response_type, params, context):
+        prompts.append(message)
+        return {"decision": "approve"}
+
+    async def go():
+        async with Client(_server(fake), elicitation_handler=user) as c:
+            return await call(c, "pipelines_write", "update_pipeline_sources",
+                              path_params={"pipeline_id": 9}, body={"config": {"password": ref}})
+
+    result = run(go())
+    assert result["error"] == "SECRET_UNAVAILABLE" and result["reference"] == ref
+    assert "bare file name" in result["message"] and "Nothing was sent" in result["message"]
+    assert prompts == [] and fake.writes() == []
 
 
 def test_whoami_shows_where_secret_files_are_read_from(env, secrets_dir):

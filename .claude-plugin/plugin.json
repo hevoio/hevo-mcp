@@ -25,6 +25,8 @@
         "${CLAUDE_PLUGIN_ROOT}",
         "-c",
         "${CLAUDE_PLUGIN_ROOT}/constraints.txt",
+        "--python",
+        "3.12",
         "hevo-mcp"
       ],
       "env": {
