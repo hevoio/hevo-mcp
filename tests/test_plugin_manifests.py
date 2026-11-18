@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 VERSION = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]["version"]
+PYTHON = (ROOT / ".python-version").read_text().strip()
 # What each client must pass to the server: the two things a user can set. The key is a file under
 # HEVO_KEYS_DIR (default ~/.hevo), and the region comes from the agent on every call.
 ENV = {"HEVO_KEYS_DIR", "HEVO_MCP_DEFAULT_SCOPE"}
@@ -31,6 +32,9 @@ def test_every_client_starts_the_same_server_with_the_same_settings():
     for server in (claude, codex):
         assert server["command"] == "uvx" and server["args"][-1] == "hevo-mcp"
         assert server["args"][2] == "-c" and server["args"][3].endswith("constraints.txt")  # pinned dependencies
+        # The Python CI tests on. Without it uv picks the newest Python, where a pinned dependency may have no
+        # wheel (pyyaml on Windows with Python 3.15) and the install needs a C compiler.
+        assert server["args"][4:6] == ["--python", PYTHON]
     assert claude["args"][3] == "${CLAUDE_PLUGIN_ROOT}/constraints.txt"
     # The tagged release's own pins, from the same tag.
     assert codex["args"][3] == f"https://raw.githubusercontent.com/hevoio/hevo-mcp/v{VERSION}/constraints.txt"
@@ -56,6 +60,19 @@ def test_the_marketplaces_list_the_plugin():
         # url, not a github source, so Claude Code installs and updates without a GitHub SSH key.
         assert plugin["source"]["source"] == "url" and plugin["source"]["ref"] == f"v{VERSION}"
         assert plugin["source"]["url"].removesuffix(".git") == load(manifest)["repository"]
+
+
+def test_every_documented_launch_command_pins_the_python_ci_tests():
+    """A uvx command without --python breaks on a machine with no Python 3.12 and no C compiler."""
+    import re
+
+    readme = (ROOT / "README.md").read_text()
+    commands = [c for c in re.findall(r"uvx [^\n`]*hevo-mcp[^\n`]*", readme) if "--from" in c or "==" in c]
+    assert commands, "the README shows no uvx command"
+    for command in commands:
+        assert f"--python {PYTHON}" in command, f"README command without --python {PYTHON}: {command}"
+    for args in re.findall(r'"--from", "hevo-mcp==[^]]*\]', readme):  # the JSON and TOML client settings
+        assert f'"--python", "{PYTHON}"' in args, f"README settings without --python {PYTHON}: {args}"
 
 
 def test_every_manifest_declares_the_same_license():

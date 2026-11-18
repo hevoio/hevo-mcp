@@ -19,7 +19,7 @@ REDACTED = "[redacted]"
 
 # Key names (lower case) whose values are secrets. Exact names, then suffixes.
 SECRET_KEYS = frozenset({
-    "password", "passwd", "pwd", "passphrase", "secret", "secret_key", "client_secret", "api_secret",
+    "password", "passwd", "pwd", "token", "key", "passphrase", "secret", "secret_key", "client_secret", "api_secret",
     "api_key", "apikey", "access_key", "access_key_secret", "secret_access_key", "private_key",
     "private_key_passphrase", "ssh_private_key", "access_token", "refresh_token", "auth_token", "bearer_token",
     "session_token", "service_account_key", "credentials_json", "connection_string",

@@ -3,6 +3,21 @@
 All notable changes to the Hevo MCP server. The version is the one in `pyproject.toml` and in every
 plugin manifest; a `v<version>` tag publishes that version to GitHub and PyPI.
 
+## Unreleased
+
+**Fixes**
+
+- Every launch command (the Claude Code and Codex plugins, and the commands in the README) passes
+  `--python 3.12`, so uv runs the server on the Python CI tests and downloads it if needed. Before, uv
+  picked the newest Python it had or could download; on Python 3.15 some pinned dependencies (`pyyaml`)
+  have no prebuilt package, and installing them needed a C compiler, so on Windows without the Microsoft
+  C++ Build Tools the server didn't start.
+- A field named `token` or `key` is treated as a secret: it accepts a `$secret_file:` reference and is
+  redacted in results.
+- A `$secret_file:` reference whose name is a path is refused before the approval prompt, not after the
+  user approved.
+- The update notice in `hevo_whoami` gives the documented update commands for each plugin.
+
 ## 1.0.0
 
 First release.

@@ -55,7 +55,8 @@ key: one API key covers all of Hevo's production regions.
 | `au` | `https://au.hevodata.com` |
 
 **3. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)** for options 1 and 2. It runs
-the server and downloads Python 3.12 for it if needed. The
+the server and, with the `--python 3.12` in every command below, downloads Python 3.12 for it if needed;
+you don't install Python yourself, on Windows either. The
 plugins install the server from this repository; the other clients install the `hevo-mcp` package from PyPI.
 
 ## Choose how to run it
@@ -93,7 +94,8 @@ Save the key file, then:
 ```
 
 The skill is `/hevo-data:hevo-pipelines`; Claude also uses it on its own when you ask about Hevo.
-`/plugin marketplace update hevo-data` picks up new releases.
+To update to a new release, run `claude plugin marketplace update hevo-data`, then
+`claude plugin update hevo-data@hevo-data`, and start a new session.
 
 ### Codex
 
@@ -106,7 +108,7 @@ codex plugin marketplace add hevoio/hevo-mcp
 Then install `hevo-data` from the `hevo-data` marketplace: run `/plugins` in the Codex CLI, or open Plugins
 in the ChatGPT desktop app, and start a new session. Codex runs the server from the matching release on
 PyPI and passes it only the variables listed in the plugin. Use the skill as `$hevo-pipelines`, or just
-ask about Hevo. `codex plugin marketplace upgrade hevo-data` picks up new releases.
+ask about Hevo. To update to a new release, run `codex plugin marketplace upgrade hevo-data` and start a new session.
 
 Other agents run the server from the package: see the next section.
 
@@ -117,25 +119,29 @@ no port and no URL. The key comes from the server's environment. Every client be
 command, which installs the server from PyPI ([`hevo-mcp`](https://pypi.org/project/hevo-mcp/)):
 
 ```sh
-uvx hevo-mcp==1.0.0                     # the release, with its dependencies resolved today
-uvx --from hevo-mcp==1.0.0 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt hevo-mcp
+uvx --python 3.12 hevo-mcp==1.0.0       # the release, with its dependencies resolved today
+uvx --from hevo-mcp==1.0.0 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt --python 3.12 hevo-mcp
                                         # the release exactly as tested: every dependency pinned
 ```
 
 The second form is what the plugins use and what the examples below show: `-c` points at the release's
-`constraints.txt` (in this repository at the `v<version>` tag), so every dependency is the version CI tested.
+`constraints.txt` (in this repository at the `v<version>` tag), so every dependency is the version CI tested,
+and `--python 3.12` runs it on the Python CI tested. Keep `--python 3.12`: without it uv picks the newest
+Python it has or can download, some pinned dependencies have no prebuilt package for it, and uv then builds
+them from source, which fails without a C compiler (on Windows, the Microsoft C++ Build Tools). The agent
+only reports that the connection to the server closed.
 The first form installs the same server with the dependencies resolved at install time; use it where
 raw.githubusercontent.com isn't reachable (a proxy that blocks it). Either way, `hevo_whoami` reports
 `dependencies: as_tested` or lists what differs, so you can tell which you have. Use another version for
 another release (in both places: `hevo-mcp==<version>` and the `v<version>` tag). From a local clone or a
 downloaded wheel, pin with the `constraints.txt` next to it:
-`uvx --from /path/to/clone -c /path/to/clone/constraints.txt hevo-mcp`.
+`uvx --from /path/to/clone -c /path/to/clone/constraints.txt --python 3.12 hevo-mcp`.
 
 **Claude Code**
 
 ```sh
 claude mcp add -s user hevo \
-  -- uvx --from hevo-mcp==1.0.0 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt hevo-mcp
+  -- uvx --from hevo-mcp==1.0.0 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt --python 3.12 hevo-mcp
 ```
 
 `-s user` makes it available in every folder; without it, only in the current project.
@@ -146,7 +152,8 @@ claude mcp add -s user hevo \
 [mcp_servers.hevo]
 command = "uvx"
 args = ["--from", "hevo-mcp==1.0.0",
-        "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt", "hevo-mcp"]
+        "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt",
+        "--python", "3.12", "hevo-mcp"]
 ```
 
 **Claude Desktop, Cursor, Windsurf and most other clients** (`claude_desktop_config.json`,
@@ -158,7 +165,8 @@ args = ["--from", "hevo-mcp==1.0.0",
     "hevo": {
       "command": "uvx",
       "args": ["--from", "hevo-mcp==1.0.0",
-               "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt", "hevo-mcp"]
+               "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt",
+               "--python", "3.12", "hevo-mcp"]
     }
   }
 }
@@ -182,7 +190,7 @@ region.
 ### Key file
 
 The key is one file, `~/.hevo/hevo-key.json` (or `hevo-key.json` in `HEVO_KEYS_DIR`): the JSON you download
-from **Settings → API Keys** in Hevo, saved as it is. The key works in the region of your Hevo account,
+from **Account → API Keys** in Hevo, saved as it is. The key works in the region of your Hevo account,
 which the agent passes on every call.
 On macOS and Linux the server refuses a key file other users on the machine can read:
 
@@ -240,7 +248,7 @@ HEVO_MCP_ALLOWED_REGIONS=us \
   uv run hevo-mcp --transport http --host 0.0.0.0 --port 8000
 
 # or straight from PyPI
-HEVO_MCP_ALLOWED_REGIONS=us uvx --from hevo-mcp==1.0.0 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt hevo-mcp --transport http --host 0.0.0.0 --port 8000
+HEVO_MCP_ALLOWED_REGIONS=us uvx --from hevo-mcp==1.0.0 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt --python 3.12 hevo-mcp --transport http --host 0.0.0.0 --port 8000
 ```
 
 Run it under your usual process manager (systemd, a container platform, …) as a non-root user, behind
@@ -463,14 +471,15 @@ Remove-Variable pw
 `WriteAllText` saves plain UTF-8 with no byte-order mark; `Set-Content` and `>` in Windows PowerShell 5.1
 add a byte-order mark, which would become part of the value, or write UTF-16, which the server can't read.
 
-Names are bare file names, never paths, and only this folder is read: a request can never pick up your
+Names are bare file names, never paths (a path is refused before you are asked to approve), and only this
+folder is read: a request can never pick up your
 other credentials (cloud keys, tokens, variables). The folder is `secrets/` next to the key file, so with
 `HEVO_KEYS_DIR` set it moves along (`hevo_whoami` shows it as `secrets_dir`).
 
 Three rules keep a reference from leaking a secret:
 
-- A reference is accepted only in a field that holds a secret (`password`, `*_token`, `client_secret`,
-  `api_key`, ...): where Hevo stores it as a secret and where results come back `[redacted]`. In any other
+- A reference is accepted only in a field that holds a secret (`password`, `token`, `key`, `*_token`,
+  `client_secret`, `api_key`, ...): where Hevo stores it as a secret and where results come back `[redacted]`. In any other
   field (a host, a name) the call is refused, so the value can't be echoed back or sent to a host.
 - **Every request that carries a reference asks for your approval**, even a create, which otherwise
   doesn't. The prompt shows the reference and the whole request, so you see which secret goes to which
@@ -514,7 +523,7 @@ file and no secret files; it can additionally ship its logs to Coralogix if its 
 
 ## What the agent sees
 
-- **Secrets are redacted.** In every result, a value under a key that names a secret (`password`,
+- **Secrets are redacted.** In every result, a value under a key that names a secret (`password`, `token`, `key`,
   `secret_key`, `private_key`, `client_secret`, `*_token`, ...) comes back as `[redacted]`.
 - **Hidden text is removed.** Terminal escape sequences, control characters and invisible or
   direction-changing Unicode are stripped from every string Hevo returns, so nothing in a pipeline name or

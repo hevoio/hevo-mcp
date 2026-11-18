@@ -72,6 +72,20 @@ def references(value: Any) -> list[str]:
     return out
 
 
+def bad_name(refs: list[str]) -> str | None:
+    """The first reference whose name isn't a bare file name, so it is refused before the approval prompt."""
+    return next((ref for ref in refs if not _valid_name(ref[len(FILE_PREFIX):])), None)
+
+
+def _valid_name(name: str) -> bool:
+    return bool(FILE_NAME.fullmatch(name)) and ".." not in name
+
+
+def _name_error(ref: str) -> str:
+    return (f"{ref!r}: use a bare file name (letters, digits, '.', '_', '-'), not a path. "
+            f"Files are read from {secrets_dir()} only.")
+
+
 def misplaced(value: Any) -> list[str]:
     """Fields holding a reference under a key that doesn't name a secret, as dotted paths."""
     out: list[str] = []
@@ -107,9 +121,8 @@ def resolve(value: Any) -> Any:
 def _lookup(ref: str) -> str:
     name = ref[len(FILE_PREFIX):]
     folder = secrets_dir()
-    if not FILE_NAME.fullmatch(name) or ".." in name:
-        raise SecretUnavailable(f"{ref!r}: use a bare file name (letters, digits, '.', '_', '-'), not a path. "
-                                f"Files are read from {folder} only.")
+    if not _valid_name(name):
+        raise SecretUnavailable(_name_error(ref))
     path = folder / name
     if not path.exists() and not path.is_symlink():
         raise SecretUnavailable(f"{ref!r}: no file named {name} in {folder}. Ask the user to save the secret "

@@ -381,6 +381,11 @@ class HevoServer:
                               f"value, never another field (here: {', '.join(misplaced)}). Nothing was sent to "
                               "Hevo. Put the reference under the field that holds the secret, and nowhere else.",
                               endpoint=name, reference=refs[0], fields=misplaced)
+            if bad := secrets.bad_name(refs):
+                # Checked before the approval prompt, so the user is never asked to approve a request that
+                # would then fail on the reference's name.
+                return _error("SECRET_UNAVAILABLE", f"{secrets._name_error(bad)} Nothing was sent to Hevo.",
+                              endpoint=name, reference=bad)
         if ep.name == "create_pipeline":
             # The create guard reads connector metadata and refuses an unknown connector, a missing config key or a
             # Destination that isn't an Edge one, before the user is asked to approve the create.
