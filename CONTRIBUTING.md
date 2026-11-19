@@ -43,8 +43,25 @@ The plugin marketplaces install a release tag (`ref` in `.claude-plugin/marketpl
 - Don't put keys, hostnames other than Hevo's public regions, or personal details in code, tests, commit
   messages or PR descriptions.
 
+## Dependencies
+
+`constraints.txt` pins every dependency at its `uv.lock` version. The plugins and the documented `uvx`
+commands install with it, and a copy ships inside the package so `hevo_whoami` can report whether an
+install matches it. After changing dependencies (`uv lock`), run
+`uv run python scripts/set_version.py --constraints`; a test fails while it's stale. The launch commands
+pass `--python` with the version in `.python-version`, the one CI tests; a test fails if one doesn't.
+
 ## Releasing
 
-`uv run python scripts/set_version.py <version>` sets the version everywhere it appears. Merge, tag the
-merged commit `v<version>` and push the tag; `.github/workflows/release.yml` builds, attests and publishes
-the release to GitHub and, after approval, to PyPI.
+`uv run python scripts/set_version.py <version>` sets the version in `pyproject.toml`, every plugin
+manifest and every install-from-tag reference in the README, and updates `uv.lock` and `constraints.txt`
+(`--check` only reports). Every release needs a new version: uv caches the server by version, and a
+version on PyPI can never be replaced.
+
+Merge, tag the merged commit `v<version>` and push the tag. `.github/workflows/release.yml` builds the
+wheel and the source package, attests them, publishes them with `SHA256SUMS` as a GitHub release and,
+after an approval in the `pypi` environment, uploads them to PyPI with trusted publishing. The plugins
+install from the tag, and `hevo_whoami` tells older installs that a newer version is available.
+
+`scripts/package_check.py` installs a built wheel and runs it over stdio as a customer would;
+`claude plugin validate .` checks the Claude Code manifest.

@@ -6,8 +6,8 @@
 
 It changes the version in pyproject.toml and every plugin manifest, and the release tag and PyPI version that
 the Codex marketplace, the Codex server command and the README install from; then it runs
-`uv lock` so uv.lock follows. Then: commit, merge, tag the merged commit `v<version>` and push the tag (see the
-README's "Releasing").
+`uv lock` so uv.lock follows. Then: commit, merge, tag the merged commit `v<version>` and push the tag (see
+"Releasing" in CONTRIBUTING.md).
 """
 
 import argparse

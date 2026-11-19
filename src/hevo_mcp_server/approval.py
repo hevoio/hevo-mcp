@@ -10,7 +10,7 @@ at all, and approval is asked on top of it.
 
 The question goes to the user through MCP elicitation, which the client shows in its own UI, so the model
 can't answer it. The answer does come from the client, so a client the user doesn't trust could answer by
-itself; the server can't tell a click from a client's auto-reply (see the README's threat model):
+itself; the server can't tell a click from a client's auto-reply (see "What this protects against" in the README):
 
 * MCP 2026-07-28 clients: the tool answers with an input request (SEP-2322); the client shows the prompt
   and calls the tool again with the answer. The request carries state, sealed by the MCP framework, that
