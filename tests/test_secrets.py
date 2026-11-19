@@ -55,7 +55,7 @@ def test_a_reference_is_never_redacted_so_the_user_can_see_it():
 
     cleaned = sanitize.clean({"password": "$secret_file:mysql-prod", "token": "$secret_file:t", "key": "real-value"})
     assert cleaned == {"password": "$secret_file:mysql-prod", "token": "$secret_file:t", "key": "[redacted]"}
-    assert sanitize.clean({"password": "hunter2"}) == {"password": "[redacted]"}
+    assert sanitize.clean({"password": "fake-password"}) == {"password": "[redacted]"}
 
 
 def test_file_references_resolve_and_the_rest_is_untouched(secrets_dir):

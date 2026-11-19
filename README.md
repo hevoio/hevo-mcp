@@ -245,9 +245,10 @@ error, where your MCP client shows them, with keys and secrets removed.
 There is no telemetry or analytics. The server never calls an endpoint that returns pipeline records,
 because Hevo promises that pipeline data stays in the region the customer chose.
 
-**What the agent sees:** secrets in results come back as `[redacted]`, and hidden characters or terminal
-escape codes are removed from everything Hevo returns, so a pipeline name or error message can't hide
-instructions.
+**What the agent sees:** secrets in results come back as `[redacted]`: password, key and token fields,
+every HTTP header value a REST API Source stores (such as `Authorization`), and credentials in URLs (such as
+`?api_key=`). Hidden characters and terminal escape codes are removed from everything Hevo returns, so a
+pipeline name or error message can't hide instructions.
 
 **What this protects against:** the read-only default, the approval prompts and the redaction stop
 mistakes by the model, and calls steered by text it read (an error message that says "delete

@@ -1,5 +1,6 @@
 """What reaches the agent: secrets redacted, hidden characters removed, spec text screened, tools fingerprinted."""
 
+import pytest
 from fastmcp import Client
 
 import build_manifest
@@ -9,9 +10,9 @@ from tests.test_server import local_server
 
 
 def test_secrets_are_redacted_wherever_they_are():
-    data = {"data": [{"name": "orders", "config": {"host": "db.example.com", "user": "app", "password": "hunter2",
-                                                   "ssh_private_key": "-----BEGIN", "api-key": "k",
-                                                   "refresh_token": "r", "client_secret": "c", "port": 5432}}],
+    data = {"data": [{"name": "orders", "config": {"host": "db.example.com", "user": "app", "password": "fake-password",
+                                                   "ssh_private_key": "fake-private-key", "api-key": "fake-api-key",
+                                                   "refresh_token": "fake-refresh-token", "client_secret": "fake-client-secret", "port": 5432}}],
             "next_token": "page-2", "password_set": True, "secret": None}
     out = sanitize.clean(data)
     config = out["data"][0]["config"]
@@ -19,7 +20,51 @@ def test_secrets_are_redacted_wherever_they_are():
     assert all(config[k] == "[redacted]" for k in ("password", "ssh_private_key", "api-key", "refresh_token",
                                                      "client_secret"))
     assert out["next_token"] == "page-2" and out["password_set"] is True and out["secret"] is None
-    assert data["data"][0]["config"]["password"] == "hunter2"  # the input is not changed
+    assert data["data"][0]["config"]["password"] == "fake-password"  # the input is not changed
+
+
+@pytest.mark.parametrize("headers, expected", [
+    ("Authorization: Bearer fake-token\nX-Api-Version: 2", "Authorization: [redacted]\nX-Api-Version: [redacted]"),
+    ('{"Authorization": "Bearer fake-token"}', '{"Authorization": "[redacted]"}'),
+    ("not a header list, token abc", "[redacted]"),
+    ({"Authorization": "Bearer fake-token", "Accept": "application/json"},
+     {"Authorization": "[redacted]", "Accept": "[redacted]"}),
+    ([{"key": "Authorization", "value": "Bearer fake-token"}, {"name": "X-Shop", "value": "fake-shop"}],
+     [{"key": "Authorization", "value": "[redacted]"}, {"name": "X-Shop", "value": "[redacted]"}]),
+    ("", ""),
+    (None, None),
+])
+def test_rest_source_header_values_are_redacted_and_names_kept(headers, expected):
+    config = {"url": "https://api.example.com/v1/orders", "db_password": "fake-password", "headers": headers}
+    out = sanitize.clean({"data": [{"source": {"config": config}}]})["data"][0]["source"]["config"]
+    assert out == {"url": "https://api.example.com/v1/orders", "db_password": "[redacted]", "headers": expected}
+    assert sanitize.clean({"custom_headers": {"X-Key": "fake-key"}}) == {"custom_headers": {"X-Key": "[redacted]"}}
+
+
+def test_credential_headers_and_secret_pairs_are_redacted_anywhere():
+    out = sanitize.clean({"Authorization": "Bearer fake-token", "Cookie": "session=fake-session",
+                          "params": [{"name": "api_key", "value": "fake-api-key"}, {"name": "page", "value": "2"}],
+                          "field": {"key": "Content-Type", "value": "application/json"}})
+    assert out == {"Authorization": "[redacted]", "Cookie": "[redacted]",
+                   "params": [{"name": "api_key", "value": "[redacted]"}, {"name": "page", "value": "2"}],
+                   "field": {"key": "Content-Type", "value": "application/json"}}
+    # A credential header is redacted in results but is not a secret field for `$secret_file:` references.
+    assert not sanitize.is_secret_key("Authorization")
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("https://api.example.com/v1/orders?api_key=fake-api-key&page=2", "https://api.example.com/v1/orders?api_key=[redacted]&page=2"),
+    ("https://api.example.com/x?access_token=fake-token&limit=10#top", "https://api.example.com/x?access_token=[redacted]&limit=10#top"),
+    ("https://b.example.com/f?X-Amz-Credential=fake-credential&X-Amz-Signature=fake-signature&X-Amz-Expires=60",
+     "https://b.example.com/f?X-Amz-Credential=[redacted]&X-Amz-Signature=[redacted]&X-Amz-Expires=60"),
+    ("postgres://app:fake-password@localhost:5432/shop", "postgres://app:[redacted]@localhost:5432/shop"),
+    ("GET https://api.example.com/x?key=fake-key: 401 Unauthorized", "GET https://api.example.com/x?key=[redacted]: 401 Unauthorized"),
+    ("https://user@api.example.com/a?page_token=p&next_token=n", "https://user@api.example.com/a?page_token=p&next_token=n"),
+    ("https://api.example.com/x?token=", "https://api.example.com/x?token="),
+])
+def test_credentials_in_urls_are_redacted_and_the_rest_is_kept(text, expected):
+    assert sanitize.clean({"config": {"url": text}}) == {"config": {"url": expected}}
+    assert sanitize.clean([text]) == [expected]
 
 
 def test_hidden_characters_are_removed_and_ordinary_text_is_kept():
@@ -31,7 +76,7 @@ def test_hidden_characters_are_removed_and_ordinary_text_is_kept():
 
 
 def test_tool_results_reach_the_agent_cleaned(env):
-    rows = {"data": [{"id": 1, "name": "orders\x1b[2J", "source": {"password": "hunter2"}}]}
+    rows = {"data": [{"id": 1, "name": "orders\x1b[2J", "source": {"password": "fake-password"}}]}
     fake = FakeHevo({("GET", "/api/v2/pipelines"): rows})
 
     async def go():
