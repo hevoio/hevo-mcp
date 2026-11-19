@@ -17,6 +17,15 @@ plugin manifest; a `v<version>` tag publishes that version to GitHub and PyPI.
 - A `$secret_file:` reference whose name is a path is refused before the approval prompt, not after the
   user approved.
 - The update notice in `hevo_whoami` gives the documented update commands for each plugin.
+- HTTP header values are redacted in results. A REST API Source keeps its headers (`Authorization`, API
+  tokens) under `headers`, often as free text that no field name marks as secret, so a Standard pipeline
+  read returned them in full. Every value under a `headers` or `*_headers` field is now redacted, whether
+  it is text, JSON text, an object or a list of name and value pairs; header names are kept. An
+  `Authorization` or `Cookie` field, and a name and value pair whose name is a secret, are redacted
+  anywhere.
+- Credentials in URLs are redacted in results: a query parameter whose name is a secret (`?api_key=`,
+  `&access_token=`, signed-URL `X-Amz-Signature`) and the password in `scheme://user:password@host`, in
+  any string (a Source's `url`, an error message). The rest of the URL is kept.
 
 ## 1.0.0
 

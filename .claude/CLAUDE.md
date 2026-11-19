@@ -43,6 +43,14 @@ claude --plugin-dir .                     # try local changes: the marketplace i
 - **This repository is public.** No private hostnames, environment names, people, ticket links or
   infrastructure details in tracked files, tests, commit messages or PR descriptions. The server knows only
   Hevo's public regions; there is no way to point it at another environment.
+- **Never copy real account data into the repository.** Nothing read from a Hevo account (pipeline,
+  Source or Destination config, ids, names, hosts, emails, job ids, error messages) goes into code, comments,
+  docstrings, tests, fixtures, docs, commit messages or PR descriptions, not even as an example. Use made-up
+  values on `example.com` hosts instead.
+- **Sample credentials are obviously fake.** CI runs trufflehog on every commit. In tests and docs, use
+  values like `fake-password` or `fake-token`, never realistic ones. A sample URL with a password uses
+  `localhost` as its host (`postgres://app:fake-password@localhost/shop`); in docs, write
+  `scheme://user:password@host`.
 - **Read-only by default** must stay the default; writes need an explicit scope.
 - **No endpoint that returns pipeline records.** GDPR data residency: Hevo promises that a customer's
   pipeline data never leaves the region they choose, so the server returns configuration and metadata only.

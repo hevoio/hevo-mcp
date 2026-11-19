@@ -18,8 +18,10 @@ dev_only/
 # Editors
 .idea
 
-# Agent and tool caches
-.claude/
+# Agent and tool caches. The project guide is kept in .claude/CLAUDE.md: at the repository root, which is
+# also the plugin root, the plugin validator would take it for plugin content.
+.claude/*
+!.claude/CLAUDE.md
 .playwright-mcp/
 .pytest_cache/
 .ruff_cache/

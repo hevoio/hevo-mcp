@@ -75,15 +75,15 @@ def test_an_approved_call_reaches_hevo_and_the_prompt_shows_it(env, mode):
     async def go():
         async with Client(server(fake), mode=mode, elicitation_handler=user) as c:
             return await call(c, "pipelines_write", "update_pipeline_sources", region="us",
-                              path_params={"pipeline_id": 9}, body={"config": {"host": "db1", "password": "pw-123"}})
+                              path_params={"pipeline_id": 9}, body={"config": {"host": "db1", "password": "fake-password"}})
 
     assert run(go())["code"] == "Success"
     [sent] = fake.writes()
-    assert json.loads(sent.content) == {"config": {"host": "db1", "password": "pw-123"}}  # Hevo gets the real body
+    assert json.loads(sent.content) == {"config": {"host": "db1", "password": "fake-password"}}  # Hevo gets the real body
     [shown] = user.prompts
     assert "update_pipeline_sources" in shown and "PATCH /api/v2/pipelines/9/sources" in shown
     assert "If the Source credentials are incorrect, the Pipeline cannot read data from the Source." in shown
-    assert "db1" in shown and "pw-123" not in shown  # the prompt masks secrets
+    assert "db1" in shown and "fake-password" not in shown  # the prompt masks secrets
     # The first line names the change, the resource and the region: Claude Code shows only that line until
     # the prompt is opened. The request itself comes last, under "Technical details".
     assert shown.splitlines()[0] == "Update Source of Edge Pipeline 9 in the us region?"

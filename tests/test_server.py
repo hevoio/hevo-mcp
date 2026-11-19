@@ -464,7 +464,7 @@ def test_writes_are_audited_without_bodies(env, caplog):
     async def go():
         async with Client(local_server(fake)) as c:
             await call(c, "pipelines_write", "update_pipeline_sources",
-                       path_params={"pipeline_id": 9}, body={"config": {"password": "db-pass-123"}})
+                       path_params={"pipeline_id": 9}, body={"config": {"password": "fake-password"}})
 
     run(go())
     # Two records: the approval prompt sent to the client, then the call made after the user approved it.
@@ -472,7 +472,7 @@ def test_writes_are_audited_without_bodies(env, caplog):
     assert asked["outcome"] == "awaiting_approval" and asked["approval"] == "requested"
     assert entry["tool"] == "pipelines_write" and entry["endpoint"] == "update_pipeline_sources"
     assert entry["outcome"] == "ok" and entry["params"] == {"pipeline_id": 9} and entry["approval"] == "approved"
-    assert "db-pass-123" not in _all_log_text(caplog)
+    assert "fake-password" not in _all_log_text(caplog)
 
 
 def test_refused_and_failed_calls_are_logged_with_request_id(env, caplog, no_wait):
