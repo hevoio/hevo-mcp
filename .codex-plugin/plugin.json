@@ -1,6 +1,6 @@
 {
   "name": "hevo-data",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Connects your AI agent to Hevo. Includes the hevo-pipelines skill and the Hevo MCP server, which manages your Pipelines, Destinations, Models, Workflows, team users, and OAuth accounts through the Hevo API.",
   "author": {
     "name": "Hevo Data",

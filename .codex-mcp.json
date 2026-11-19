@@ -4,9 +4,9 @@
       "command": "uvx",
       "args": [
         "--from",
-        "hevo-mcp==1.0.0",
+        "hevo-mcp==1.0.1",
         "-c",
-        "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt",
+        "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.1/constraints.txt",
         "--python",
         "3.12",
         "hevo-mcp"

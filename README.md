@@ -92,10 +92,6 @@ codex plugin marketplace add hevoio/hevo-mcp
 Then run `/plugins` in the Codex CLI, or open Plugins in the ChatGPT desktop app, and install
 `hevo-data`.
 
-**Plugins in release 1.0.0:** run `uv python pin --global 3.12` once before installing (any OS). These
-plugins don't ask uv for Python 3.12, so uv may pick the newest Python instead, and installing the server can then need a C compiler (on Windows, the Microsoft C++ Build
-Tools). The pin makes uv default to Python 3.12 wherever a project doesn't pin its own version.
-
 **Claude Desktop, Cursor, Windsurf and other MCP clients.** Add this server to the client's MCP settings
 file (`claude_desktop_config.json`, `~/.cursor/mcp.json`, …):
 
@@ -104,8 +100,8 @@ file (`claude_desktop_config.json`, `~/.cursor/mcp.json`, …):
   "mcpServers": {
     "hevo": {
       "command": "uvx",
-      "args": ["--from", "hevo-mcp==1.0.0",
-               "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt",
+      "args": ["--from", "hevo-mcp==1.0.1",
+               "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.1/constraints.txt",
                "--python", "3.12", "hevo-mcp"]
     }
   }
@@ -121,8 +117,8 @@ file (`claude_desktop_config.json`, `~/.cursor/mcp.json`, …):
   ```toml
   [mcp_servers.hevo]
   command = "uvx"
-  args = ["--from", "hevo-mcp==1.0.0",
-          "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt",
+  args = ["--from", "hevo-mcp==1.0.1",
+          "-c", "https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.1/constraints.txt",
           "--python", "3.12", "hevo-mcp"]
   ```
 
@@ -130,7 +126,7 @@ file (`claude_desktop_config.json`, `~/.cursor/mcp.json`, …):
 
   ```sh
   claude mcp add -s user hevo \
-    -- uvx --from hevo-mcp==1.0.0 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.0/constraints.txt --python 3.12 hevo-mcp
+    -- uvx --from hevo-mcp==1.0.1 -c https://raw.githubusercontent.com/hevoio/hevo-mcp/v1.0.1/constraints.txt --python 3.12 hevo-mcp
   ```
 
 `-c` installs exactly the dependency versions this release was tested with. Keep `--python 3.12`: without

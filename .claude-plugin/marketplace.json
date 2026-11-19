@@ -5,7 +5,7 @@
   "plugins": [
     {
       "name": "hevo-data",
-      "source": { "source": "url", "url": "https://github.com/hevoio/hevo-mcp.git", "ref": "v1.0.0" },
+      "source": { "source": "url", "url": "https://github.com/hevoio/hevo-mcp.git", "ref": "v1.0.1" },
       "description": "Connects your AI agent to Hevo. Includes the hevo-pipelines skill and the Hevo MCP server, which manages your Pipelines, Destinations, Models, Workflows, team users, and OAuth accounts through the Hevo API."
     }
   ]

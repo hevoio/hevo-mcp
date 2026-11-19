@@ -3,7 +3,7 @@
 All notable changes to the Hevo MCP server. The version is the one in `pyproject.toml` and in every
 plugin manifest; a `v<version>` tag publishes that version to GitHub and PyPI.
 
-## Unreleased
+## 1.0.1
 
 **Fixes**
 
