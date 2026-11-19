@@ -1,6 +1,6 @@
 [project]
 name = "hevo-mcp"
-version = "1.0.0"
+version = "1.0.1"
 description = "MCP server for Hevo: Edge and Standard pipelines, Destinations, Models, Workflows, team users and OAuth accounts"
 license = "MIT"
 license-files = ["LICENSE", "NOTICE"]
